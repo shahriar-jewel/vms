@@ -1,0 +1,196 @@
+<br>
+<div class="row">
+    <div class="col-xs-12">
+        <div class="box box-solid">
+            <div class="box-header">
+                <i class="fa fa-bar-chart-o"></i>
+
+                <h3 class="box-title">Comparative Visitor Statistics</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-default btn-sm" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+                    <button type="button" class="btn btn-default btn-sm" data-widget="remove"><i class="fa fa-times"></i>
+            </button>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body">
+                <div class="row">
+                    <div class="col-xs-6 col-md-3 text-center">
+                        <input type="text" class="knob" value="<%= today_visitor_count %>" data-skin="tron" data-thickness="0.2" data-width="120" data-height="120" data-fgColor="#3c8dbc" data-readonly="true" style="outline: none;">
+                        <div class="knob-label"><h4><b>Todays visitor</b></h4></div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-xs-6 col-md-3 text-center">
+                        <input type="text" class="knob" value="<%= week_visitor_count %>" data-skin="tron" data-thickness="0.2" data-width="120" data-height="120" data-fgColor="#f56954" data-readonly="true" style="outline: none;">
+                        <div class="knob-label"><h4><b>Weeks visitor</b></h4></div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-xs-6 col-md-3 text-center">
+                        <input type="text" class="knob" value="<%= month_visitor_count %>" data-skin="tron" data-thickness="0.1" data-width="120" data-height="120" data-fgColor="#00a65a" data-readonly="true" style="outline: none;">
+
+                        <div class="knob-label"><h4><b>Months visitor</b></h4></div>
+                    </div>
+                    <!-- ./col -->
+                    <div class="col-xs-6 col-md-3 text-center">
+                        <input type="text" class="knob" value="50" data-skin="tron" data-thickness="0.2" data-angleArc="250" data-angleOffset="-125" data-width="120" data-height="120" data-fgColor="#00c0ef" data-readonly="true" style="outline: none;">
+
+                        <div class="knob-label"><h4><b>Referal visitor</b></h4></div>
+                    </div>
+                    <!-- ./col -->
+                </div>
+                <!-- /.row -->
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+    </div>
+    <!-- /.col -->
+</div>
+<!-- /.row -->
+
+<div class="row">
+    <div class="col-md-6">
+        <!-- AREA CHART -->
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">Last Six Months Statistics</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <div class="box-body">
+                <div class="chart">
+                    <canvas id="areaChart" style="height:300px"></canvas>
+                </div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+    </div>
+    <!-- /.col (LEFT) -->
+    <div class="col-md-6">
+        <!-- BAR CHART -->
+        <div class="box box-success">
+            <div class="box-header with-border">
+                <h3 class="box-title">Visitor Category Count</h3>
+
+                <div class="box-tools pull-right">
+                    <button type="button" class="btn btn-box-tool" data-widget="collapse"><i class="fa fa-minus"></i>
+            </button>
+                    <button type="button" class="btn btn-box-tool" data-widget="remove"><i class="fa fa-times"></i></button>
+                </div>
+            </div>
+            <div class="box-body chart-responsive">
+                <div class="chart" id="sales-chart" style="height: 300px;"></div>
+            </div>
+            <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+    </div>
+    <!-- /.col (RIGHT) -->
+</div>
+<!-- /.row -->
+<script>
+    $(function() {
+        "use strict";
+
+        //DONUT CHART
+        var donut = new Morris.Donut({
+            element: 'sales-chart',
+            resize: true,
+            colors: ["#3c8dbc", "#f56954", "#00a65a"],
+            data: [{
+                label: "Member",
+                value: 12
+            }, {
+                label: "Affiliated Member",
+                value: 30
+            }, {
+                label: "Guest",
+                value: 20
+            }],
+            hideHover: 'auto'
+        });
+    });
+</script>
+<script>
+    $(function() {
+        /* ChartJS
+         * -------
+         * Here we will create a few charts using ChartJS
+         */
+
+        //--------------
+        //- AREA CHART -
+        //--------------
+
+        // Get context with jQuery - using jQuery's .get() method.
+        var areaChartCanvas = $('#areaChart').get(0).getContext('2d')
+            // This will get the first returned node in the jQuery collection.
+        var areaChart = new Chart(areaChartCanvas)
+
+        var areaChartData = {
+            labels: ['Jan', 'Feb', 'March', 'April', 'May', 'June'],
+            datasets: [{
+                label: 'Expense',
+                fillColor: 'rgba(60,141,188,0.9)',
+                strokeColor: 'rgba(60,141,188,0.8)',
+                pointColor: '#3b8bba',
+                pointStrokeColor: 'rgba(60,141,188,1)',
+                pointHighlightFill: '#fff',
+                pointHighlightStroke: 'rgba(60,141,188,1)',
+                data: [105, 359, 200, 401, 156, 355]
+            }]
+        }
+
+        var areaChartOptions = {
+            //Boolean - If we should show the scale at all
+            showScale: true,
+            //Boolean - Whether grid lines are shown across the chart
+            scaleShowGridLines: false,
+            //String - Colour of the grid lines
+            scaleGridLineColor: 'rgba(0,0,0,.05)',
+            //Number - Width of the grid lines
+            scaleGridLineWidth: 1,
+            //Boolean - Whether to show horizontal lines (except X axis)
+            scaleShowHorizontalLines: true,
+            //Boolean - Whether to show vertical lines (except Y axis)
+            scaleShowVerticalLines: true,
+            //Boolean - Whether the line is curved between points
+            bezierCurve: true,
+            //Number - Tension of the bezier curve between points
+            bezierCurveTension: 0.3,
+            //Boolean - Whether to show a dot for each point
+            pointDot: false,
+            //Number - Radius of each point dot in pixels
+            pointDotRadius: 4,
+            //Number - Pixel width of point dot stroke
+            pointDotStrokeWidth: 1,
+            //Number - amount extra to add to the radius to cater for hit detection outside the drawn point
+            pointHitDetectionRadius: 20,
+            //Boolean - Whether to show a stroke for datasets
+            datasetStroke: true,
+            //Number - Pixel width of dataset stroke
+            datasetStrokeWidth: 2,
+            //Boolean - Whether to fill the dataset with a color
+            datasetFill: true,
+            //String - A legend template
+
+            //Boolean - whether to maintain the starting aspect ratio or not when responsive, if set to false, will take up entire container
+            maintainAspectRatio: true,
+            //Boolean - whether to make the chart responsive to window resizing
+            responsive: true
+        }
+
+        //Create the line chart
+        areaChart.Line(areaChartData, areaChartOptions)
+
+    })
+</script>

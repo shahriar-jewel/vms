@@ -1,0 +1,142 @@
+<style type="text/css">
+    th {
+        background-color: #3c8dbc;
+        color: white;
+    }
+
+    .box-body {
+        background-color: white;
+    }
+
+    .box-title {
+        color: white;
+    }
+</style>
+
+<section class="content">
+    <div class="col-xs-12 no-padding">
+        <div class="box-header">
+            <h3 class="box-title" style="color: grey;"><i style="color: #3c8dbc"
+                    class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;Purpose Management</h3>
+            <a data-toggle="modal" data-target="#purpose_modal" data-backdrop="static" data-keyboard="false"
+                href="#"><button class="pull-right" type="button"><i style="color:#3c8dbc"
+                        class="glyphicon glyphicon-plus-sign"></i></button></a>
+        </div>
+        <div class="box-body table-responsive">
+            <table id="purpose_datatable" class="table table-bordered text-center table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>SL.</th>
+                        <th>Purpose</th>
+                        <th>Status</th>
+                        <th>Entry</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+<%- include('modal.ejs') %>
+
+    <script type="text/javascript">
+        "use strict";
+        var KTDatatablesDataSourceAjaxServer = function () {
+            var initTable1 = function () {
+                var base_url = '/admin/purpose/datatable-ajax';
+                $('#purpose_datatable').DataTable({
+                    "responsive": true,
+                    "searchDelay": 500,
+                    "processing": true,
+                    "pageLength": 15,
+                    "lengthMenu": [[5, 15, 20,100, -1], [5, 15, 20,100, "Todos"]],
+                    "serverSide": true,
+                    "ajax": {
+                        "url": base_url,
+                        "dataType": 'json',
+
+                    },
+                    columns: [{
+                        "data": '_id'
+                    }, {
+                        "data": 'purpose'
+                    }, {
+                        "data": 'status'
+                    }, {
+                        "data": 'createdAt'
+                    }, {
+                        "data": 'actions'
+                    },]
+
+                });
+            };
+            return {
+                init: function () {
+                    initTable1();
+                },
+            };
+        }();
+        jQuery(document).ready(function () {
+            KTDatatablesDataSourceAjaxServer.init();
+        });
+    </script>
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+        $("#purpose_form").submit(function (e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            var url;
+            var method;
+            var id = $('#hidden_purpose_id').val();
+            if (id) {
+                url = '/admin/purpose/' + id;
+                method = 'PUT';
+            } else {
+                url = '/admin/purpose/';
+                method = 'POST';
+            }
+
+            $.ajax({
+            url: url,
+            method: 'POST',
+            data: data,
+            dataType : 'json',
+            success: function (response) {
+                // console.log(response);
+                if (response['statuscode'] === 422) {
+                        var err_msg = '';
+                        response['errors'].forEach((error, index) => {
+                            err_msg += error['msg'] + '\n';
+                        });
+                        swal({
+                            title: response['msg'],
+                            text: err_msg,
+                            button: 'OK'
+                        }).then(() => { });
+                    } else if (response['statuscode'] === 200) {
+                        $('#purpose_modal').modal('hide');
+                        swal({
+                            title: response['msg'],
+                            button: 'OK'
+                        }).then(() => {
+                            $('#purpose_datatable').DataTable().ajax.reload();
+                        });
+                    }
+            },
+            error: function (error) {
+                console.log(error);
+                swal({
+                    title: "Access Denied. Please contact with Administrator !",
+                    icon: "error",
+                    closeOnClickOutside: false,
+                    button: "OK!",
+                    className: "myClass",
+                }).then(() => { 
+                    $('#purpose_datatable').DataTable().ajax.reload();
+                });
+            }
+        });
+        });
+    </script>

@@ -1,0 +1,54 @@
+<style type="text/css">
+    th {
+        background-color: #3c8dbc;
+        color: white;
+    }
+
+    .box-body {
+        background-color: white;
+    }
+
+    .box-title {
+        color: white;
+    }
+    .zoom {
+        transition: transform 0.3s;
+    }
+
+    .zoom:hover {
+        transform: scale(5.05);
+    }
+</style>
+
+<section class="content">
+    <div class="col-xs-12 no-padding">
+        <div class="box-header">
+            <h3 class="box-title" style="color: grey;"><i style="color: #3c8dbc"
+                    class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Visitor Logbook</h3>
+            <a id="open_add_visitor_form" data-toggle="modal" data-target="#add_visitor_modal" data-backdrop="static" data-keyboard="false"
+                href="#"><button class="pull-right" type="button"><i style="color:#3c8dbc"
+                        class="glyphicon glyphicon-plus-sign"></i></button></a>
+        </div>
+        <div class="box-body table-responsive">
+            <table id="visitor_datatable" class="table table-bordered text-center table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Member/Staff Id</th>
+                        <th>Visitor Type</th>
+                        <th>Name</th>
+                        <th>Image</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Time In</th>
+                        <th>Time Out</th>
+                        <th>Duration</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+<%- include('guestmodal.ejs') %>
+<%- include('modal.ejs') %>
+<%- include('visitorjs.ejs') %>

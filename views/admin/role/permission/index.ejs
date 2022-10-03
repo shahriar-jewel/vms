@@ -1,0 +1,143 @@
+<style type="text/css">
+    th {
+        background-color: #3c8dbc;
+        color: white;
+    }
+
+    .box-body {
+        background-color: white;
+    }
+
+    .box-title {
+        color: white;
+    }
+</style>
+
+<section class="content">
+    <div class="col-xs-12 no-padding">
+        <div class="box-header">
+            <h3 class="box-title" style="color: grey;"><i style="color: #0689bd"
+                    class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;Permission Management</h3>
+            <a data-toggle="modal" data-target="#permission_modal" data-backdrop="static" data-keyboard="false"
+                href="#"><button class="pull-right" type="button"><i style="color: #0689bd"
+                        class="glyphicon glyphicon-plus-sign"></i></button></a>
+        </div>
+        <div class="box-body table-responsive">
+            <table id="permission_datatable" class="table table-bordered text-center table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>SL.</th>
+                        <th>Permission Name</th>
+                        <th>Route</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Created Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+<%- include('modal.ejs') %>
+
+    <script type="text/javascript">
+        "use strict";
+        var KTDatatablesDataSourceAjaxServer = function () {
+            var initTable1 = function () {
+                var base_url = '/admin/permissions/datatable-ajax';
+                $('#permission_datatable').DataTable({
+                    "responsive": true,
+                    "searchDelay": 500,
+                    "processing": true,
+                    "pageLength": 15,
+                    "lengthMenu": [[5, 15, 20,100, -1], [5, 15, 20,100, "Todos"]],
+                    "serverSide": true,
+                    "ajax": {
+                        "url": base_url,
+                        "dataType": 'json',
+
+                    },
+                    columns: [{
+                        "data": '_id'
+                    }, {
+                        "data": 'name'
+                    }, {
+                        "data": 'route'
+                    },{
+                        "data": 'method'
+                    },{
+                        "data": 'description'
+                    },{
+                        "data": 'status'
+                    }, {
+                        "data": 'createdAt'
+                    }, {
+                        "data": 'actions'
+                    },]
+
+                });
+            };
+            return {
+                init: function () {
+                    initTable1();
+                },
+            };
+        }();
+        jQuery(document).ready(function () {
+            KTDatatablesDataSourceAjaxServer.init();
+        });
+    </script>
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+        $("#permission_form").submit(function (e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            var url;
+            var method;
+            var id = $('#hidden_permission_id').val();
+            if (id) {
+                url = '/admin/permissions/' + id;
+                method = 'PUT';
+            } else {
+                url = '/admin/permissions/';
+                method = 'POST';
+            }
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: data,
+                success: function (response) {
+                    // console.log(response);
+                    $('#hidden_permission_id').val('');
+                    if (response['statuscode'] === 422) {
+                        var err_msg = '';
+                        var sl = 1;
+                        response['errors'].forEach((error, index) => {
+                            err_msg += sl+++'. '+ error['msg'] + '\n';
+                        });
+                        swal({
+                            title: response['msg'],
+                            text: err_msg,
+                            button: 'OK'
+                        }).then(() => { });
+                    } else if (response['statuscode'] === 200) {
+                        $('#permission_modal').modal('hide');
+                        swal({
+                            title: response['msg'],
+                            button: 'OK'
+                        }).then(() => {
+                            $('#permission_datatable').DataTable().ajax.reload();
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                }
+            });
+        });
+    </script>

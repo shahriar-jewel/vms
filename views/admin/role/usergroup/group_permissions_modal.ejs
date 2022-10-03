@@ -1,0 +1,116 @@
+<style type="text/css">
+    .modal-fullscreen {
+        width: 80%;
+        /*height: 100%;*/
+        margin: auto;
+        top: 30px !important;
+        left: 0;
+    }
+
+    .cursor-pointer {
+        cursor: pointer;
+    }
+
+    .form-control {
+        margin: 2px 0px !important;
+    }
+
+    .thumbnail {
+        display: block;
+        height: 110px;
+        border: 1px solid #ddd;
+        -webkit-transition: border 0.2s ease-in-out;
+        -o-transition: border 0.2s ease-in-out;
+        transition: border 0.2s ease-in-out;
+    }
+
+    .content {
+        min-height: 0px !important;
+    }
+
+    input[type="checkbox"] {
+        accent-color: #0689bd;;
+        height: 20px;
+        width: 20px;
+        margin-top: -3px;
+    }
+</style>
+
+<form method="post" id="group_permissions_form" enctype="multipart/form-data" autocomplete="off">
+    <div class="modal fade" id="group_permissions_modal">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i style="color: #0689bd;" class="glyphicon glyphicon-lock"></i> Permission
+                        Assignment</h4>
+                </div>
+                <div class="modal-body" style="padding: 1px">
+                    <section class="content">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="nav-tabs-custom">
+                                    <ul class="nav nav-tabs" id="myTab">
+                                        <li class="active"><a href="#view" data-toggle="tab">View</a></li>
+                                        <li><a href="#create" data-toggle="tab">Create</a></li>
+                                        <li><a href="#update" data-toggle="tab">Update</a></li>
+                                        <li><a href="#delete" data-toggle="tab">Delete</a></li>
+                                    </ul>
+                                    <div class="tab-content" style="padding: 8px;">
+                                        <div class="active tab-pane" id="view">
+                                            <div class="row">
+                                                <div class="col-md-12">
+
+                                                    <input type="hidden" class="form-control input-sm" name="sys_group_id" id="sys_group_id">
+
+                                                    <% groupBy['View'].forEach((v,index) => { %>
+                                                        <div class="col-md-3">
+                                                            <div class="checkbox">
+                                                                <label>
+                                                                    <input name="view[]" value="<%= v['route']+' '+v['method']+' '+v['id'] %>" id="<%= v['id'] %>" type="checkbox">&nbsp;&nbsp; <%= v['name'] %>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    <% }); %>
+                                                   
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="tab-pane" id="create">
+
+                                            <% groupBy['Create'].forEach((c,index) => { %>
+                                                <div class="col-md-3">
+                                                    <div class="checkbox">
+                                                        <label>
+                                                            <input name="create[]" value="<%= c['route']+' '+c['method']+' '+c['id'] %>" id="<%=c['id']%>" type="checkbox">&nbsp;&nbsp; <%= c['name'] %>
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            <% }); %>
+
+                                        </div>
+
+                                        <div class="tab-pane" id="update">
+                                            <h1>update</h1>
+                                        </div>
+
+                                        <div class="tab-pane" id="delete">
+                                            <h1>delete</h1>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                    </section>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</form>

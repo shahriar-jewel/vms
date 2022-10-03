@@ -1,0 +1,64 @@
+<style type="text/css">
+    .modal-halfscreen {
+        width: 50%;
+        margin: auto;
+        top: 30px !important;
+        left: 0;
+    }
+    .cursor-pointer {
+        cursor: pointer;
+    }
+    .form-control {
+        margin: 2px 0px !important;
+    }
+    .thumbnail {
+        display: block;
+        height: 110px;
+        border: 1px solid #ddd;
+        -webkit-transition: border 0.2s ease-in-out;
+        -o-transition: border 0.2s ease-in-out;
+        transition: border 0.2s ease-in-out;
+    }
+    .content {
+        min-height: 0px !important;
+    }
+</style>
+
+<form method="post" id="guest_form" autocomplete="off" enctype="multipart/form-data">
+    <div class="modal fade" id="view_guest_modal">
+        <div class="modal-dialog modal-halfscreen">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title"><i style="color: #3c8dbc" class="fa fa-users"></i> Guest Information</h4>
+                </div>
+                <div class="modal-body" style="padding: 1px">
+
+                    <section class="content">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="col-md-12">
+                                    <div class="box-body table-responsive" style="padding: 4px;">
+                                        <table class="table table-bordered table-striped">
+                                            <thead>
+                                                <tr class="text-sm">
+                                                    <th width="30%">Name</th>
+                                                    <th width="45%">Address</th>
+                                                    <th width="18%">Mobile</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="guest-holder">
+
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

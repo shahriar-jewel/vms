@@ -1,0 +1,369 @@
+<script type="text/javascript">
+    "use strict";
+    var KTDatatablesDataSourceAjaxServer = function () {
+        var initTable1 = function () {
+            var base_url = '/admin/visitor/datatable-ajax';
+            $('#visitor_datatable').DataTable({
+                "responsive": true,
+                "searchDelay": 500,
+                "processing": true,
+                "serverSide": true,
+                "ajax": {
+                    "url": base_url,
+                    "dataType": 'json',
+
+                },
+                columns: [{
+                    "data": 'membership_id'
+                }, {
+                    "data": 'visitor_type'
+                }, {
+                    "data": 'name'
+                }, {
+                    "data": 'image'
+                }, {
+                    "data": 'meeting_status'
+                }, {
+                    "data": 'date'
+                }, {
+                    "data": 'time_in'
+                }, {
+                    "data": 'time_out'
+                }, {
+                    "data": 'duration'
+                }, {
+                    "data": 'actions'
+                },]
+
+            });
+        };
+        return {
+            init: function () {
+                initTable1();
+            },
+        };
+    }();
+    jQuery(document).ready(function () {
+        KTDatatablesDataSourceAjaxServer.init();
+    });
+</script>
+
+<script type="text/javascript">
+    var populate_guest = [];
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+    });
+    $("#add_visitor_form").submit(function (e) {
+        e.preventDefault();
+        var formData = new FormData(this);
+        formData.append('guests', JSON.stringify(populate_guest));
+        var url;
+        var method;
+        var id = $('#hidden_visitor_id').val();
+        if (id) {
+            url = '/admin/visitor/' + id;
+            method = 'PUT';
+        } else {
+            url = '/admin/visitor/';
+            method = 'POST';
+        }
+        $.ajax({
+            url: url,
+            method: method,
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            success: function (response) {
+                if (response['statuscode'] === 422) {
+                    var err_msg = '';
+                    response['errors'].forEach((error, index) => {
+                        err_msg += error['msg'] + '\n';
+                    });
+                    swal({
+                        title: response['msg'],
+                        text: err_msg,
+                        closeOnClickOutside: false,
+                        button: 'OK'
+                    }).then(() => { });
+                } else if (response['statuscode'] === 200) {
+                    $('#add_visitor_modal').modal('hide');
+                    swal({
+                        title: response['msg'],
+                        closeOnClickOutside: false,
+                        button: 'OK'
+                    }).then(() => {
+                        $('#visitor_datatable').DataTable().ajax.reload();
+                        $('#add_visitor_form')[0].reset();
+                        $("#member-availability-table").find(".member-availability").remove();
+                        // $("#cart-item-holder").find(".cart-item").remove();
+                        build_guest_array(populate_guest = []);
+                        $('.visit_place').hide();
+                    });
+                }
+            },
+            error: function (error) {
+                console.log(error);
+                swal({
+                    title: "Access Denied. Please contact with Administrator !",
+                    icon: "error",
+                    closeOnClickOutside: false,
+                    button: "OK!",
+                    className: "myClass",
+                }).then(() => {
+                    $('#visitor_datatable').DataTable().ajax.reload();
+                });
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    // For image preview
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                $('#uploaded_image')
+                    .attr('src', e.target.result);
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".visit_place").animate({ "opacity": "hide", top: "200" }, 500);
+        $("#aff_member_name").animate({ "opacity": "hide"}, 500);
+        $("#guest_entry").animate({ "opacity": "hide"}, 500);
+        $("#relatives").animate({ "opacity": "show"}, 500);
+
+        $('.visitor_type').on('click', function () {
+            if($(this).val() == 'Affiliated'){
+                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "hide"}, 500);
+                $("#aff_member_name").animate({ "opacity": "show"}, 500);
+                $("#membership_id").removeAttr('readonly');
+                $("#guest_entry").animate({ "opacity": "hide"}, 500);
+                $("#relatives").animate({ "opacity": "show"}, 500);
+                $(".visit_place").animate({ "opacity": "show"}, 500);
+            }else if($(this).val() == 'Guest'){
+                $("#guest_entry").animate({ "opacity": "show"}, 500);
+                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "show"}, 500);
+                $("#aff_member_name").animate({ "opacity": "hide"}, 500);
+                $("#membership_id").attr('readonly',true);
+                $("#relatives").animate({ "opacity": "hide"}, 500);
+                $(".visit_place").animate({ "opacity": "show"}, 500);
+            }else if($(this).val() == 'Member'){
+                $("#guest_entry").animate({ "opacity": "hide"}, 500);
+                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "show"}, 500);
+                $("#membership_id").attr('readonly',true);
+                $("#relatives").animate({ "opacity": "show"}, 500);
+                $("#aff_member_name").animate({ "opacity": "hide"}, 500);
+                $(".visit_place").animate({ "opacity": "hide"}, 500);
+            }
+
+            // if ($(this).val() == 'Guest' || $(this).val() == 'Affiliated') {
+            //     $(".visit_place").animate({ "opacity": "show", top: "200" }, 500);
+            // } else {
+            //     $(".visit_place").animate({ "opacity": "hide", top: "200" }, 500);
+            //     $("#guest_entry").animate({ "opacity": "hide"}, 500);
+            // }
+
+            // if ($(this).val() == 'Guest') {
+            //     $("#guest_entry").animate({ "opacity": "show"}, 500);
+            // }
+
+        });
+
+        // member availability check & set data in footer table
+        $('#member_staff_dropdown').on('change', '#_id', function () {
+            $('#membership_id').val($(this).val().split(' ')[0]); // set membership_id
+
+            var url = '/admin/visitor/member-availability-check';
+            var method = 'POST';
+            var membership_id = $(this).val().split(' ')[0];
+            var user_status = $(this).val().split(' ')[2];
+            var mobile = $(this).val().split(' ')[3];
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: { membership_id, user_status, mobile },
+                success: function (response) {
+                    $("#member-availability-table").find(".member-availability").remove();
+                    // console.log(response);
+                    var htmlString = '';
+                    if (response.data) {
+                        htmlString += '<tr class="member-availability">';
+                        htmlString += '<td>' + response['data']["membership_id"] + '</td>';
+                        htmlString += '<td>' + response['data']["membership_status"] + '</td>';
+                        htmlString += '<td>' + response['data']["mobile"] + '</td>';
+                        htmlString += '<td>' + response['data']["availability"] + '</td>';
+                        htmlString += '</tr>';
+                        $("#member-availability-table").append(htmlString);
+                    }
+
+                },
+                error: function (error) {
+                    console.log(error);
+                    swal({
+                        title: "Access Denied. Please contact with Administrator !",
+                        icon: "error",
+                        closeOnClickOutside: false,
+                        button: "OK!",
+                        className: "myClass",
+                    }).then(() => {
+                        $('#visitor_datatable').DataTable().ajax.reload();
+                    });
+                }
+            });
+
+
+        });
+    });
+    // add_guest button click event
+    $('#add_guest').on('click', function () {
+        var name = $('#guest_name').val();
+        var address = $('#guest_address').val();
+        var mobile = $('#guest_mobile').val();
+        if (name == '' || address == '' || mobile == '') return false;
+        var guest = { name, address, mobile };
+        var isExists = false;
+        populate_guest.forEach((guest, index) => {
+            if (guest['name'].toUpperCase() == name.toUpperCase() && guest['address'].toUpperCase() == address.toUpperCase() && guest['mobile'].toUpperCase() == mobile.toUpperCase()) {
+                isExists = true;
+                return false;
+            }
+        });
+        if (!isExists) {
+            if (populate_guest.push(guest)) {
+                $('#guest_name').val('');
+                $('#guest_address').val('');
+                $('#guest_mobile').val('');
+            }
+        }
+        // console.log(populate_guest);
+        build_guest_array(populate_guest);
+    });
+    $('#cart-item-holder').on('click', '.delete_guest', function () {
+        var guest_id = $(this).attr('data-id');
+        // console.log(guest_id);
+        populate_guest.splice(guest_id, 1); // remove the guest
+        $(this)[0].parentElement.parentElement.remove();
+        build_guest_array(populate_guest);
+        // console.log(populate_guest);
+    });
+
+    const build_guest_array = (populate_guest) => {
+        $("#cart-item-holder").find(".cart-item").remove();
+        if (populate_guest.length > 0) {
+            $.each(populate_guest, function (index, guest) {
+                var htmlString = '';
+                htmlString += '<tr class="cart-item">';
+                htmlString += '<td>' + guest["name"] + '</td>';
+                htmlString += '<td>' + guest["address"] + '</td>';
+                htmlString += '<td>' + guest["mobile"] + '</td>';
+                htmlString += '<td class="text-center"><a data-id="' + index + '" class="delete_guest" href="#"><i style="color:#3c8dbc" class="glyphicon glyphicon-trash"></i></a></td>';
+                htmlString += '</tr>';
+                $("#cart-item-holder").append(htmlString);
+            });
+        } else {
+            var htmlString = '';
+            htmlString += '<tr class="cart-item text-center">';
+            htmlString += '<td colspan="4">' + 'No guest found' + '</td>';
+            htmlString += '</tr>';
+            $("#cart-item-holder").append(htmlString);
+        }
+
+    }
+</script>
+
+<!-- checkout from meeting -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#visitor_datatable').on('click', '#checkout', function () {
+            var url = '/admin/visitor/meeting-checkout';
+            var method = 'POST';
+            var visit_id = $(this).attr('data-visit_id');
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: {
+                    _id: visit_id
+                },
+                success: function (response) {
+                    // console.log(response);
+                    swal({
+                        title: response['msg'],
+                        closeOnClickOutside: false,
+                        button: 'OK'
+                    }).then(() => {
+                        $('#visitor_datatable').DataTable().ajax.reload();
+                        $('#add_visitor_form')[0].reset();
+                    });
+                },
+                error: function (error) {
+                    console.log(error);
+                    swal({
+                        title: "Access Denied. Please contact with Administrator !",
+                        icon: "error",
+                        closeOnClickOutside: false,
+                        button: "OK!",
+                        className: "myClass",
+                    }).then(() => {
+                        $('#visitor_datatable').DataTable().ajax.reload();
+                    });
+                }
+            });
+        })
+    })
+</script>
+<!-- view guest information -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#visitor_datatable').on('click', '#guests', function () {
+            var url = '/admin/visitor/view-guest';
+            var method = 'POST';
+            var visit_id = $(this).attr('data-id');
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: { visit_id },
+                success: function (response) {
+                    // console.log(response);
+                    var htmlString = '';
+                    $("#guest-holder").find(".guest").remove();
+                    if (response['data'].length > 0) {
+                        $.each(response['data'], function (index, guest) {
+                            htmlString += '<tr class="guest">';
+                            htmlString += '<td>' + guest["name"] + '</td>';
+                            htmlString += '<td>' + guest["address"] + '</td>';
+                            htmlString += '<td>' + guest["mobile"] + '</td>';
+                            htmlString += '</tr>';
+                            $("#guest-holder").append(htmlString);
+                        });
+                    } else {
+                        htmlString += '<tr class="guest text-center">';
+                        htmlString += '<td colspan="3">' + 'No guest found' + '</td>';
+                        htmlString += '</tr>';
+                        $("#guest-holder").append(htmlString);
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    swal({
+                        title: "Access Denied. Please contact with Administrator !",
+                        icon: "error",
+                        closeOnClickOutside: false,
+                        button: "OK!",
+                        className: "myClass",
+                    }).then(() => {
+                        $('#visitor_datatable').DataTable().ajax.reload();
+                    });
+                }
+            });
+
+        })
+    })
+</script>

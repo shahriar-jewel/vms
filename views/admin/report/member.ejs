@@ -1,0 +1,192 @@
+<style type="text/css">
+    .box-body {
+      background-color: white;
+    }
+  
+    .box-title {
+      color: white;
+    }
+  
+    .box-header {
+      background-color: #105e7d;
+    }
+  </style>
+  
+  <body>
+  
+  
+    <div class="row">
+      <div class="col-md-12">
+        <div class="col-md-4"></div>
+        <div class="col-md-4">
+          <div class="box-body" style="padding: 4px;">
+            <div class="form-group">
+              <label for="inputPassword3" class="col-sm-4 control-label" style="margin-top: 8px;">Select Report
+                Type</label>
+              <div class="col-sm-8">
+                <select class="form-control select2" name="report_type" id="report_type" style="width: 100%;">
+                  <option value="" disabled="" selected="">- - - Select - - -</option>
+                  <option value="1">Todays Member</option>
+                  <option value="2">This Weeks Member</option>
+                  <option value="3">This Months Member</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4"></div>
+      </div>
+    </div>
+  
+    <section class="invoice" id="printTable1" style="border: 1px solid black;">
+      <div class="row">
+        <div class="col-md-12">
+          <h2 class="page-header text-center"
+            style="background-color: #c0c2c1 !important; padding: 10px;print-color-adjust: exact;-webkit-print-color-adjust: exact;">
+            <b>Cadet College Club Ltd</b><br>
+            <small><b>Plot 2, Road 203A, Sector 12, Purbachal Town, Narayangonj, Bangladesh.</b></small>
+          </h2>
+        </div>
+      </div>
+  
+      <div class="row">
+        <div class="col-xs-12 table-responsive">
+  
+          <div style="background: #f2f5f4 !important;print-color-adjust: exact;-webkit-print-color-adjust: exact;font-weight: bold;font-size: 18px;"
+                  colspan="8" class="text-center" id="report-type">Member Report</div>
+  
+          <table class="table table-striped table-bordered">
+            <!-- <thead>
+              <tr>
+                <th style="background: #f2f5f4 !important;print-color-adjust: exact;-webkit-print-color-adjust: exact;"
+                  colspan="8" class="text-center" id="report-type">Visitor Report</th>
+              </tr>
+            </thead> -->
+            <thead>
+              <tr style="background: #c0c2c1 !important;print-color-adjust: exact;-webkit-print-color-adjust: exact;">
+                <th>Membership Id</th>
+                <th>Member Name</th>
+                <th>Visitor Type</th>
+                <th>Date</th>
+                <th>In Time</th>
+                <th>Out Time</th>
+                <th>Duration</th>
+              </tr>
+            </thead>
+            <tbody id="data-holder">
+            </tbody>
+          </table>
+        </div>
+      </div><br><br><br><br><br><br><br>
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th style="text-decoration-line: overline;">President</th>
+            <th></th>
+            <th></th>
+            <th></th>
+            <th style="text-decoration-line: overline;">Secretary</th>
+            <th></th>
+            <th></th>
+            <th></th>
+          </tr>
+        </thead>
+      </table>
+      <!-- this row will not appear when printing -->
+      <div class="row no-print">
+        <div class="col-xs-12">
+          <button type="button" class="btn btn-primary btn-bordred waves-effect w-md m-b-5 print_invoice pull-right">
+            <i class="fa fa-print"></i>&nbsp;Print Report</button>
+  
+          <script>
+            function printData() {
+              var printContents = document.getElementById("printTable1").innerHTML;
+              var originalContents = document.body.innerHTML;
+              document.body.innerHTML = printContents;
+              window.print();
+              document.body.innerHTML = originalContents;
+            }
+            $('.print_invoice').on('click', function () {
+              printData();
+              $(document).ready(function () {
+  
+              })
+            })
+          </script>
+  
+        </div>
+      </div>
+  
+    </section>
+    <!-- /.content -->
+    <div class="clearfix"></div>
+  </body>
+  <script>
+    $(document).ready(function () {
+      $(document).on('change', '#report_type', function () {
+        var reportType = $(this).val();
+  
+        if (reportType == 1) {
+          $('#report-type').html('Todays Member List');
+        }
+        else if (reportType == 2) {
+          $('#report-type').html('This Weeks Member List');
+        }
+        else if (reportType == 3) {
+          $('#report-type').html('This Months Member List');
+        }
+        else
+          $('#report-type').html('Member Report');
+  
+        var url = "/admin/report/member/ajax";
+        $.ajax({
+          url: url,
+          method: 'POST',
+          dataType: 'json',
+          data: { reportType },
+  
+          success: function (response) {
+            // console.log(response);
+            if (response['data'].length > 0) {
+              $("#data-holder").find(".data-item").remove();
+              var log = "";
+              $.each(response['data'], function (index, item) {
+                log += "<tr class='data-item' style='font-size: 12px;'>"
+                log += "<td>" + item['visitor_info']['member']['membership_id'] + "</td>"
+                log += "<td>" + item['visitor_info']['member']['name'] + "</td>"
+                // log += "<td><img src='/images/" + item.image + "' width='100' style='cursor:pointer;border-radius:50%;' class='h-75 align-self-end zoom' alt='' /></td>"
+                log += "<td>" + item['visitor_info']['member']['visitor_type'] + "</td>"
+                log += "<td>" + item['visitor_info']['member']['date'] + "</td>"
+                log += "<td>" + item['visitor_info']['member']['time_in'] + "</td>"
+                log += "<td>" + item['visitor_info']['member']['time_out'] + "</td>"
+                log += "<td>" + item['visitor_info']['member']['duration'] + "</td>"
+                log += "</tr>";
+              });
+              $("#data-holder").append(log);
+            }
+            else {
+              swal({
+                title: 'Data not found!',
+                button: 'OK'
+              }).then(() => {
+                // $('#purpose_datatable').DataTable().ajax.reload();
+              });
+              $("#data-holder").find(".data-item").remove();
+            }
+          },
+          error: function (error) {
+            console.log(error);
+          }
+        })
+      })
+    })
+  </script>

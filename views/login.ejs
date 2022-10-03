@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+
+<!-- Mirrored from adminlte.io/themes/AdminLTE/pages/examples/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 28 Oct 2019 19:01:01 GMT -->
+<!-- Added by HTTrack -->
+<meta http-equiv="content-type" content="text/html;charset=utf-8" />
+<!-- /Added by HTTrack -->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <link rel="shortcut icon" href="/assets/images/banglatracgroup.jpg">
+    <title>VMS | Bangla Trac</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="/assets/css/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/assets/css/font-awesome/css/font-awesome.min.css">
+    <!-- Ionicons -->
+
+    <link rel="stylesheet" href="/assets/css/Ionicons/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/assets/css/AdminLTE.min.css">
+    <!-- iCheck -->
+    <link rel="stylesheet" href="/assets/css/blue/blue.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+<![endif]-->
+
+    <!-- Google Font -->
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+
+    <style type="text/css">
+        body {
+            /* background: #000 url(assets/images/background.jpg); */
+            /* background-size: cover; */
+            height: auto;
+            background-color: #d2d6de;
+        }
+    </style>
+
+</head>
+
+<body class="hold-transition login-page">
+    <div class="login-box">
+        <!-- <p class="login-box-msg">Cadet College Club</p> -->
+        <!-- /.login-logo -->
+        <div class="login-box-body">
+            <div class="login-logo">
+                <img src="/assets/images/cadet_college_logo.png" width="150px;"><br>
+                <h3>Visitor Management System</h3>
+            </div>
+            <span class="invalid-feedback" role="alert">
+                <strong>
+                    <%= message %>
+                </strong>
+            </span>
+            <form method="POST" action="/admin/login" autocomplete="off">
+                <div class="form-group has-feedback">
+                    <input id="email" type="text" class="form-control" placeholder="Email" name="email"
+                        autocomplete="username" autofocus>
+
+                    <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                </div>
+                <div class="form-group has-feedback">
+                    <input id="password" type="password" placeholder="Password" class="form-control" name="password"
+                        autocomplete="current-password">
+
+                    <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8">
+                        <div class="checkbox icheck">
+                            <label>
+                                <input type="checkbox"> Remember Me
+                            </label>
+                        </div>
+                    </div>
+                    <!-- /.col -->
+                    <div class="col-xs-4">
+                        <button type="submit" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                    </div>
+                    <!-- /.col -->
+                </div>
+            </form>
+        </div>
+        <!-- /.login-box-body -->
+    </div>
+    <!-- /.login-box -->
+
+    <div class="login-logo pull-right">
+        <img style="margin-right: 30px;" src="/assets/images/banglatrac.png" width="150px;">
+    </div>
+
+    <!-- jQuery 3 -->
+    <script src="/assets/js/jquery.min.js"></script>
+    <!-- Bootstrap 3.3.7 -->
+    <script src="/assets/js/bootstrap.min.js"></script>
+    <!-- iCheck -->
+    <script src="/assets/js/icheck.min.js"></script>
+    <script>
+        $(function () {
+            $('input').iCheck({
+                checkboxClass: 'icheckbox_square-blue',
+                radioClass: 'iradio_square-blue',
+                increaseArea: '20%' /* optional */
+            });
+        });
+    </script>
+</body>
+
+<!-- Mirrored from adminlte.io/themes/AdminLTE/pages/examples/login.html by HTTrack Website Copier/3.x [XR&CO'2014], Mon, 28 Oct 2019 19:01:02 GMT -->
+
+</html>

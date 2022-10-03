@@ -1,0 +1,263 @@
+<style type="text/css">
+    th {
+        background-color: #3c8dbc;
+        color: white;
+    }
+
+    .box-body {
+        background-color: white;
+    }
+
+    .box-title {
+        color: white;
+    }
+</style>
+
+<section class="content">
+    <div class="col-xs-12 no-padding">
+        <div class="box-header">
+            <h3 class="box-title" style="color: grey;"><i style="color: #0689bd;"
+                    class="fa fa-users"></i>&nbsp;&nbsp;User
+                Group Permission</h3>
+            <a data-toggle="modal" data-target="#user_group_modal" data-backdrop="static" data-keyboard="false"
+                href="#"><button class="pull-right" type="button"><i style="color:#0689bd;"
+                        class="glyphicon glyphicon-plus-sign"></i></button></a>
+        </div>
+        <div class="box-body table-responsive">
+            <table id="user_group_datatable" class="table table-bordered text-center table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>SL.</th>
+                        <th>Group Name</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Updated</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <!-- <tbody>
+
+            <tr>
+                <td>1</td>
+                <td>name</td>
+                <td>status</td>
+                <td>created_at</td>
+                <td>updated_at</td>
+                <td>
+                    <a href="#" class='btn-primary btn btn-rounded' style='padding:0px 4px;' href='#'><i
+                            class='glyphicon glyphicon-lock'></i></a>
+                    <a class='btn-success btn btn-rounded' style='padding:0px 4px;' href='#'><i
+                            class='fa fa-edit'></i></a>
+                </td>
+            </tr>
+
+        </tbody> -->
+            </table>
+        </div>
+    </div>
+</section>
+<%- include('modal.ejs') %>
+    <%- include('group_permissions_modal.ejs') %>
+
+        <script type="text/javascript">
+            "use strict";
+            var KTDatatablesDataSourceAjaxServer = function () {
+                var initTable1 = function () {
+                    var base_url = '/admin/user-group/datatable-ajax';
+                    $('#user_group_datatable').DataTable({
+                        "responsive": true,
+                        "searchDelay": 500,
+                        "processing": true,
+                        "serverSide": true,
+                        "ajax": {
+                            "url": base_url,
+                            "dataType": 'json',
+                        },
+                        columns: [{
+                            "data": '_id'
+                        }, {
+                            "data": 'name'
+                        }, {
+                            "data": 'status'
+                        }, {
+                            "data": 'createdAt'
+                        }, {
+                            "data": 'updatedAt'
+                        }, {
+                            "data": 'actions'
+                        },]
+
+                    });
+                };
+                return {
+                    init: function () {
+                        initTable1();
+                    },
+                };
+            }();
+            jQuery(document).ready(function () {
+                KTDatatablesDataSourceAjaxServer.init();
+            });
+        </script>
+        <script type="text/javascript">
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            });
+            $("#user_group_form").submit(function (e) {
+                e.preventDefault();
+                var data = $(this).serialize();
+                var url;
+                var method;
+                var id = $('#hidden_group_id').val();
+                if (id) {
+                    url = '/admin/user-groups/' + id;
+                    method = 'PUT';
+                } else {
+                    url = '/admin/user-groups/';
+                    method = 'POST';
+                }
+
+                $.ajax({
+                    url: url,
+                    method: method,
+                    data: data,
+                    dataType: "json",
+                    success: function (response) {
+                        // console.log(response);
+                        $('#hidden_group_id').val('');
+                        if (response['statuscode'] === 422) {
+                            var err_msg = '';
+                            response['errors'].forEach((error, index) => {
+                                err_msg += error['msg'] + '\n';
+                            });
+                            swal({
+                                title: response['msg'],
+                                text: err_msg,
+                                button: 'OK'
+                            }).then(() => { });
+                        } else if (response['statuscode'] === 200) {
+                            swal({
+                                title: response['msg'],
+                                button: 'OK'
+                            }).then(() => {
+                                $('#user_group_modal').modal('hide');
+                                $('#user_group_datatable').DataTable().ajax.reload();
+                                // $('.form_submit')[0].reset();
+                            });
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        swal({
+                            title: "Access Denied. Please contact with Administrator !",
+                            icon: "error",
+                            closeOnClickOutside: false,
+                            button: "OK!",
+                            className: "myClass",
+                        }).then(() => {
+                            $('#user_group_modal').modal('hide');
+                            $('#user_group_datatable').DataTable().ajax.reload();
+                        });
+                    }
+                });
+            });
+        </script>
+
+        <script type="text/javascript">
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            });
+            $('#user_group_datatable').on('click', ".permission_modal", function () {
+                var button = $(this);
+                var role_id = button.attr("data-sys_group_id");
+                $('#sys_group_id').val(role_id);
+                var url = '/admin/permissions/check-role-permissions';
+                var i;
+                var total_view = $('input[name="view[]"]').length;
+                var total_create = $('input[name="create[]"]').length;
+                // for (i = 0; i <= total_view; i++) {
+                //     $('#view' + i).prop('checked', false);
+                // }
+                // for (i = 0; i <= total_create; i++) {
+                //     $('#create' + i).prop('checked', true);
+                // }
+
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: { sys_group_id: role_id },
+                    dataType: "json",
+                    success: function (response) {
+                        // console.log(response)
+                        var group_permissions = response.data;
+                        group_permissions.forEach(function (dt) {
+                            $('#' + dt['p_id']).prop('checked', true);
+                        });
+                    },
+                    error: function (error) {
+                        console.log(error);
+
+                        swal({
+                            title: "Access Denied. Please contact with Administrator !",
+                            icon: "error",
+                            closeOnClickOutside: false,
+                            button: "OK!",
+                            className: "myClass",
+                        }).then(() => {
+                            $('#group_permissions_modal').modal('hide');
+                            $('#user_group_datatable').DataTable().ajax.reload();
+                        });
+                    }
+                })
+            })
+        </script>
+
+        <script type="text/javascript">
+            $.ajaxSetup({
+                headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+            });
+            $("#group_permissions_form").submit(function (e) {
+                e.preventDefault();
+                var data = $(this).serialize();
+                var url = '/admin/permissions/build-permissions';
+                // console.log(data);
+
+                $.ajax({
+                    url: url,
+                    method: 'POST',
+                    data: data,
+                    dataType: "json",
+                    success: function (response) {
+                        // console.log(response);
+                        if (response.statuscode == 200) {
+                            $('#group_permissions_modal').modal('hide');
+                            swal({
+                                title: response['msg'],
+                                button: 'OK'
+                            }).then(() => {
+                                $('#user_group_datatable').DataTable().ajax.reload();
+                            });
+                        } else {
+                            swal({
+                                title: response['msg'],
+                                button: 'OK'
+                            }).then(() => {
+
+                            });
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                        swal({
+                            title: "Access Denied. Please contact with Administrator !",
+                            icon: "error",
+                            closeOnClickOutside: false,
+                            button: "OK!",
+                            className: "myClass",
+                        }).then(() => {
+                            $('#user_group_datatable').DataTable().ajax.reload();
+                        });
+                    }
+                });
+            });
+        </script>

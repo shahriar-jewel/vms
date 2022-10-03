@@ -1,0 +1,94 @@
+<style type="text/css">
+	.modal-fullscreen{
+		width: 50%;
+		/*height: 100%;*/
+		margin: auto;
+		top: 30px !important;
+		left: 0;
+	}
+	.cursor-pointer{
+		cursor: pointer;
+	}
+	.form-control{
+		margin: 2px 0px !important;
+	}
+	.thumbnail {
+    display: block;
+    height: 110px;
+    border: 1px solid #ddd;
+    -webkit-transition: border 0.2s ease-in-out;
+    -o-transition: border 0.2s ease-in-out;
+    transition: border 0.2s ease-in-out;
+}
+.content {
+    min-height: 0px !important;
+}
+</style>
+
+<form  method="post" id="permission_form" enctype="multipart/form-data" autocomplete="off">
+<div class="modal fade" id="permission_modal">
+	<div class="modal-dialog modal-fullscreen">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"><i style="color: #3c8dbc;" class="glyphicon glyphicon-lock"></i> Add Or Update Permission</h4>
+				</div>
+				<div class="modal-body" style="padding: 1px">
+
+					<section class="content">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="col-md-12">
+									<div class="box-body" style="padding: 4px;">
+										<div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Permission Name</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="name" id="name" placeholder="Enter permission name">
+											</div>
+										</div>
+
+										<div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Route</label>
+											<div class="col-sm-9">
+												<select class="form-control select2" name="route" id="route" style="width: 100%;">
+													<option value="" disabled="" selected="">- - - Select - - -</option>
+													<% all_route.forEach((route,index) => { %>
+                                                        <option value="<%= route %>"><%= route %></option>
+                                                    <% }); %>
+												</select>
+											</div>
+										</div>
+
+                                        <input type="hidden" name="hidden_permission_id" id="hidden_permission_id">
+
+                                        <div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Description</label>
+											<div class="col-sm-9">
+												<textarea class="form-control" rows="3" name="description" id="description" placeholder="Enter description"></textarea>
+											</div>
+										</div>
+
+										<div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Status</label>
+											<div class="col-sm-9">
+												<input id="status" checked="" style="width: 20px;height: 20px;" name="status" value="1" type="checkbox">
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</section>
+				</div>
+
+				<div class="modal-footer">
+					<!-- <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button> -->
+					<button type="submit" class="btn btn-primary">Save</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	</form>

@@ -1,0 +1,36 @@
+<style type="text/css">
+  th{
+   background-color: #0689bd;
+   color: white;
+ }
+ .box-body{
+   background-color: white;
+ }
+ .box-title{
+  color: white;
+}
+.box-header{
+  background-color:#105e7d;
+}
+</style>
+
+      <section class="content">
+      <div class="error-page">
+        <h2 class="headline text-yellow"> 401</h2>
+
+        <div class="error-content">
+          <h3><i class="fa fa-warning text-yellow"></i> Oops! You are not authorized.</h3>
+
+          <p>
+            You are not authorized to see this page, you may <a href="#" onclick="goToPreviousURL()">return to the previous page</a>.
+          </p>
+        </div>
+        <!-- /.error-content -->
+      </div>
+      <!-- /.error-page -->
+    </section>
+    <script> 
+        function goToPreviousURL() { 
+        window.history.back(); 
+        } 
+    </script>
