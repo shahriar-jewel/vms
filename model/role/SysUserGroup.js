@@ -3,8 +3,7 @@ const autoIncrement = require("mongoose-auto-increment");
 
 const sysUserGroupSchema = new mongoose.Schema({
     sys_group_id: {
-        type: Number,
-        required: true
+        type: Number
     },
     parent_id: {
         type: String,
