@@ -1,0 +1,149 @@
+<style type="text/css">
+    th {
+        background-color: #3c8dbc;
+        color: white;
+    }
+
+    .box-body {
+        background-color: white;
+    }
+
+    .box-title {
+        color: white;
+    }
+</style>
+
+<section class="content">
+    <div class="col-xs-12 no-padding">
+        <div class="box-header">
+            <h3 class="box-title" style="color: grey;"><i style="color: #3c8dbc"
+                    class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Member List</h3>
+            <a id="open_modal" data-toggle="modal" data-target="#member_staff_modal" data-backdrop="static" data-keyboard="false"
+                href="#"><button class="pull-right" type="button"><i style="color:#3c8dbc"
+                        class="glyphicon glyphicon-plus-sign"></i></button></a>
+        </div>
+        <div class="box-body table-responsive">
+            <table id="member_staff_datatable" class="table table-bordered text-center table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Membership Id</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Mobile</th>
+                        <th>Membership Type</th>
+                        <th>Is Member</th>
+                        <th>Membership Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</section>
+<%- include('modal.ejs') %>
+
+<script type="text/javascript">
+    "use strict";
+    var KTDatatablesDataSourceAjaxServer = function () {
+        var initTable1 = function () {
+            var base_url = '/admin/member-staff/datatable-ajax';
+            $('#member_staff_datatable').DataTable({
+                "responsive": true,
+                "searchDelay": 500,
+                "processing": true,
+                "pageLength": 15,
+                "lengthMenu": [[5, 15, 20,100, -1], [5, 15, 20,100, "Todos"]],
+                "serverSide": true,
+                "ajax": {
+                    "url": base_url,
+                    "dataType": 'json',
+
+                },
+                columns: [{
+                    "data": 'member_staff_id'
+                }, {
+                    "data": 'name'
+                }, {
+                    "data": 'email'
+                },{
+                    "data": 'mobile'
+                },{
+                    "data": 'type'
+                },{
+                    "data": 'is_member'
+                },{
+                    "data": 'is_active'
+                }, {
+                    "data": 'actions'
+                },]
+
+            });
+        };
+        return {
+            init: function () {
+                initTable1();
+            },
+        };
+    }();
+    jQuery(document).ready(function () {
+        KTDatatablesDataSourceAjaxServer.init();
+    });
+</script>
+<script type="text/javascript">
+    $.ajaxSetup({
+        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+    });
+    $("#member_staff_form").submit(function (e) {
+        e.preventDefault();
+        var data = $(this).serialize();
+        var url;
+        var method;
+        var id = $('#hidden_member_staff_id').val();
+        if (id) {
+            url = '/admin/member-staff/' + id;
+            method = 'PUT';
+        } else {
+            url = '/admin/member-staff/';
+            method = 'POST';
+        }
+
+        $.ajax({
+            url: url,
+            method: method,
+            data: data,
+            success: function (response) {
+                // console.log(response);
+                $('#hidden_member_staff_id').val('');
+                if (response['statuscode'] === 422) {
+                    var err_msg = '';
+                    var sl = 1;
+                    response['errors'].forEach((error, index) => {
+                        err_msg += sl+++'. '+ error['msg'] + '\n';
+                    });
+                    swal({
+                        title: response['msg'],
+                        text: err_msg,
+                        button: 'OK'
+                    }).then(() => { });
+                } else if (response['statuscode'] === 200) {
+                    $('#member_staff_modal').modal('hide');
+                    swal({
+                        title: response['msg'],
+                        button: 'OK'
+                    }).then(() => {
+                        $('#member_staff_datatable').DataTable().ajax.reload();
+                        $('#member_staff_form')[0].reset();
+                    });
+                }
+            },
+            error: function (error) {
+                console.log(error);
+            }
+        });
+    });
+
+
+    $('#open_modal').on('click',function(){
+        $('#type').val('').trigger('change');
+    })
+</script>

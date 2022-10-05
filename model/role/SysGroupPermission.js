@@ -2,7 +2,7 @@ const mongoose = require('mongoose')
 
 const SysGroupPermissionSchema = new mongoose.Schema({
     sys_group_id: {
-        type: Number,
+        type: String,
         required: true
     },
     p_id: { // permission id

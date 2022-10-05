@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const autoIncrement = require("mongoose-auto-increment");
 mongoose.Promise = require('bluebird');
 
 const PurposeSchema = new mongoose.Schema({

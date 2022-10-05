@@ -3,9 +3,11 @@ const mongoose = require('mongoose');
 
 const sysUserGroupSchema = new mongoose.Schema({
     sys_group_id: {
-        type: Number,
-        required: false
-    },
+        type: mongoose.Schema.Types.ObjectId,
+        index: true,
+        required: true,
+        auto: true,
+      },
     parent_id: {
         type: String,
         required: false,

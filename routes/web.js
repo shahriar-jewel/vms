@@ -6,6 +6,7 @@ const PermissionController = require('../controllers/admin/role/PermissionContro
 const PurposeController = require('../controllers/admin/PurposeController');
 const VisitorController = require('../controllers/admin/VisitorController');
 const ReportController = require('../controllers/admin/ReportController');
+const MemberStaffController = require('../controllers/admin/MemberStaffController');
 const Auth = require('../middlewares/Auth');
 const CheckPermission = require('../middlewares/CheckPermission');
 const expressListRoutes = require('express-list-routes');
@@ -89,6 +90,20 @@ router.get('/report/general',[Auth, CheckPermission('/admin/report/general'), Re
 router.post('/report/general/ajax',[Auth, CheckPermission('/admin/report/general/ajax'), ReportController.generalReportAjax]);
 router.get('/report/member',[Auth, CheckPermission('/admin/report/member'), ReportController.memberReport]);
 router.post('/report/member/ajax',[Auth, CheckPermission('/admin/report/member/ajax'), ReportController.memberReportAjax]);
+
+// Member Staff Routes
+router
+    .route('/member-staff')
+    .get([Auth, CheckPermission('/admin/member-staff'), MemberStaffController.index])
+    .post([
+        Auth, CheckPermission('/admin/member-staff'),
+        check('member_staff_id').not().isEmpty().withMessage('Membership Id is required !'),
+        check('name').not().isEmpty().withMessage('Name is required !'),
+        check('email').not().isEmpty().withMessage('Email is required !'),
+        check('mobile').not().isEmpty().withMessage('Mobile is required !'),
+        MemberStaffController.store
+    ]);
+router.get('/member-staff/datatable-ajax', [Auth, CheckPermission('/admin/member-staff/datatable-ajax'), MemberStaffController.memberStaffDatatableAjax]);
 
 
 module.exports = router;

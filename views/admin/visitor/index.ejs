@@ -11,6 +11,7 @@
     .box-title {
         color: white;
     }
+
     .zoom {
         transition: transform 0.3s;
     }
@@ -25,8 +26,8 @@
         <div class="box-header">
             <h3 class="box-title" style="color: grey;"><i style="color: #3c8dbc"
                     class="glyphicon glyphicon-book"></i>&nbsp;&nbsp;Visitor Logbook</h3>
-            <a id="open_add_visitor_form" data-toggle="modal" data-target="#add_visitor_modal" data-backdrop="static" data-keyboard="false"
-                href="#"><button class="pull-right" type="button"><i style="color:#3c8dbc"
+            <a data-toggle="modal" data-target="#add_visitor_modal" data-backdrop="static"
+                data-keyboard="false" href="#"><button class="pull-right" type="button"><i style="color:#3c8dbc"
                         class="glyphicon glyphicon-plus-sign"></i></button></a>
         </div>
         <div class="box-body table-responsive">
@@ -50,5 +51,5 @@
     </div>
 </section>
 <%- include('guestmodal.ejs') %>
-<%- include('modal.ejs') %>
-<%- include('visitorjs.ejs') %>
+    <%- include('modal.ejs') %>
+        <%- include('visitorjs.ejs') %>

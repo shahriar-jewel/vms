@@ -1,0 +1,109 @@
+<style type="text/css">
+	.modal-fullscreen{
+		width: 50%;
+		/*height: 100%;*/
+		margin: auto;
+		top: 30px !important;
+		left: 0;
+	}
+	.cursor-pointer{
+		cursor: pointer;
+	}
+	.form-control{
+		margin: 2px 0px !important;
+	}
+	.thumbnail {
+    display: block;
+    height: 110px;
+    border: 1px solid #ddd;
+    -webkit-transition: border 0.2s ease-in-out;
+    -o-transition: border 0.2s ease-in-out;
+    transition: border 0.2s ease-in-out;
+}
+.content {
+    min-height: 0px !important;
+}
+</style>
+
+<form  method="post" id="member_staff_form" enctype="multipart/form-data" autocomplete="off">
+<div class="modal fade" id="member_staff_modal">
+	<div class="modal-dialog modal-fullscreen">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span></button>
+					<h4 class="modal-title"><i style="color: #3c8dbc;" class="glyphicon glyphicon-user"></i> Add Or Update Member</h4>
+				</div>
+				<div class="modal-body" style="padding: 1px">
+
+					<section class="content">
+						<div class="row">
+							<div class="col-md-12">
+								<div class="col-md-12">
+									<div class="box-body" style="padding: 4px;">
+										<div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Membership Id</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="member_staff_id" id="member_staff_id" placeholder="Enter membership no">
+											</div>
+										</div>
+
+                                        <div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Name</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="name" id="name" placeholder="Enter member/staff name">
+											</div>
+										</div>
+
+                                        <div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Email</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="email" id="email" placeholder="Enter email address">
+											</div>
+										</div>
+
+                                        <div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Mobile</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" pattern="[0-9]{11}" maxlength="11" name="mobile" id="mobile" placeholder="Enter mobile">
+											</div>
+										</div>
+
+                                        <div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Membership Type</label>
+											<div class="col-sm-9">
+												<select class="form-control select2" name="type" id="type" style="width: 100%;">
+													<option value="" disabled="" selected="">- - - Select - - -</option>
+													<option value="AffiliatedClubMember">Affiliated Club Member</option>
+													<option value="AssociateMember">Associate Member</option>
+													<option value="CorporateMember">Corporate Member</option>
+													<option value="Donor">Donor</option>
+												</select>
+											</div>
+										</div>
+
+                                        <input type="hidden" name="hidden_member_staff_id" id="hidden_member_staff_id">
+
+										<div class="form-group">
+											<label for="inputPassword3" class="col-sm-3 control-label">Is Staff</label>
+											<div class="col-sm-9">
+												<input id="is_member" style="width: 20px;height: 20px;" name="is_member" value="staff" type="checkbox">
+											</div>
+										</div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</section>
+				</div>
+
+				<div class="modal-footer">
+					<!-- <button type="button" class="btn btn-default pull-left" data-dismiss="modal">Close</button> -->
+					<button type="submit" class="btn btn-primary">Save</button>
+				</div>
+
+			</div>
+		</div>
+	</div>
+	</form>

@@ -86,7 +86,7 @@ const UserGroupController = {
                 created_by: {
                     id: req.user.id,
                     name: req.user.name,
-                    sys_group_id: req.user.sys_group_id
+                    sys_group_id: req.user.sys_group.id
                 }
             };
         });
