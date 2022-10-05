@@ -5,7 +5,7 @@ const Auth = (req, res, next) => {
         const accesstoken = req.cookies.accesstoken;
         if (!accesstoken) return res.redirect('/');
 
-        jwt.verify(accesstoken, process.env.dev.Access_TOKEN_SECRET, (err, user) => {
+        jwt.verify(accesstoken, '37KV?w<P*mNR#K{9eK:N&/r@N=Rr#Y}8F,468/*g[jtVHW&Kbs', (err, user) => {
             if (err) return res.status(400).json({ msg: "Invalid Authentication" });
 
             req.user = user;

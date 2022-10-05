@@ -293,7 +293,7 @@ var dfs = (all_menus, root_menus) => {
 }
 
 const createAccessToken = (user) => {
-    return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
+    return jwt.sign(user, '37KV?w<P*mNR#K{9eK:N&/r@N=Rr#Y}8F,468/*g[jtVHW&Kbs', { expiresIn: '7d' });
 }
 const createRefreshToken = (user) => {
     return jwt.sign(user, process.env.REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
