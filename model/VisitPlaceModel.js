@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 mongoose.Promise = require('bluebird');
 
-const PurposeSchema = new mongoose.Schema({
-    purpose: {
+const VisitPlaceSchema = new mongoose.Schema({
+    place: {
         type: String,
         unique: true
     },
@@ -18,4 +18,4 @@ const PurposeSchema = new mongoose.Schema({
     timestamps: true
 })
 
-module.exports = mongoose.model('Purpose', PurposeSchema);
+module.exports = mongoose.model('visitplace', VisitPlaceSchema);

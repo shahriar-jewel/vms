@@ -1,31 +1,31 @@
 const { check, validationResult } = require('express-validator');
-const { respondWithError, respondWithSuccess } = require('../../controllers/admin/ResponseController');
-const Purpose = require('../../model/PurposeModel');
+const { respondWithError, respondWithSuccess } = require('./ResponseController');
+const Visitplace = require('../../model/VisitPlaceModel');
 
-const PurposeController = {
+const VisitPlaceController = {
     index: async (req, res) => {
-        return res.render('admin/purpose/index');
+        return res.render('admin/visitplace/index');
     },
     store: async (req, res) => {
         try {
             var msg, data;
-            var { purpose, status } = req.body;
+            var { place, status } = req.body;
             let errors = validationResult(req);
             if (!errors.isEmpty()) {
                 errors = errors.array();
                 msg = 'Validation Error';
                 return respondWithError(req, res, msg, errors, 422);
             } else {
-                var purpose_check = await Purpose.find({ purpose });
-                if (purpose_check.length > 0) {
+                var is_exist = await Visitplace.find({ place });
+                if (is_exist.length > 0) {
                     data = '';
-                    msg = 'Purpose Name is Already There!';
+                    msg = 'Visit place is Already There!';
                     return respondWithSuccess(req, res, msg, data, 200);
                 } else {
-                    const purpos = new Purpose({ purpose, status });
-                    if (purpos.save()) {
+                    var data = new Visitplace({ place, status });
+                    if (data.save()) {
                         data = '';
-                        msg = 'Purpose Added Successfully!';
+                        msg = 'Visit Place Added Successfully!';
                         return respondWithSuccess(req, res, msg, data, 200);
                     } else {
                         data = '';
@@ -38,42 +38,42 @@ const PurposeController = {
             return res.status(500).json({ msg: err.message });
         }
     },
-    purposeDatatableAjax: async (req, res) => {
+    visitPlaceDatatableAjax: async (req, res) => {
         try {
             var searchStr = req.query.search['value'];
             var limit = req.query.length;
-            var recordsTotal = await Purpose.count({});
+            var recordsTotal = await Visitplace.count({});
             var recordsFiltered;
 
             if (searchStr) {
                 var regex = new RegExp(searchStr, "i");
-                searchStr = { $or: [{ 'purpose': regex }] };
-                var purposes = await Purpose.find(searchStr, '_id purpose status createdAt').sort({ 'createdAt': -1 });
-                recordsFiltered = await Purpose.count(searchStr);
+                searchStr = { $or: [{ 'place': regex }] };
+                var places = await Visitplace.find(searchStr, '_id place status createdAt').sort({ 'createdAt': -1 });
+                recordsFiltered = await Visitplace.count(searchStr);
             } else {
                 searchStr = {};
-                var purposes = await Purpose.find({}).limit(Number(req.query.length)).skip(Number(req.query.start)).sort({ 'createdAt': -1 });
+                var places = await Visitplace.find({}).limit(Number(req.query.length)).skip(Number(req.query.start)).sort({ 'createdAt': -1 });
                 recordsFiltered = recordsTotal;
             }
 
             var data = [];
             var nestedData = {};
-            if (purposes) {
+            if (places) {
                 var sl = 0;
-                purposes.map((purpose, i) => {
+                places.map((visit, i) => {
                     var status;
-                    if (purpose['status'] === 1) {
+                    if (visit['status'] === 1) {
                         status = "<span class='label label-success'>Active</span>";
-                    } else if (purpose['status'] === 0) {
+                    } else if (visit['status'] === 0) {
                         status = "<span class='label label-danger'>Inactive</span>";
                     }
 
-                    var action = "<a class='btn-primary btn btn-rounded' id='edit' data-id='" + purpose['_id'] + "' style='padding:0px 4px;' href='#'><i class='glyphicon glyphicon-lock'></i></a>";
+                    var action = "<a class='btn-primary btn btn-rounded' id='edit' data-id='" + visit['_id'] + "' style='padding:0px 4px;' href='#'><i class='glyphicon glyphicon-lock'></i></a>";
                     nestedData = {
-                        _id: purpose['_id'],
-                        purpose: purpose['purpose'],
+                        _id: visit['_id'],
+                        place: visit['place'],
                         status,
-                        createdAt: new Date(purpose['createdAt']),
+                        createdAt: new Date(visit['createdAt']).toLocaleTimeString(),
                         actions: action
                     };
 
@@ -94,4 +94,4 @@ const PurposeController = {
         }
     },
 }
-module.exports = PurposeController;
+module.exports = VisitPlaceController;

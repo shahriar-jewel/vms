@@ -3,7 +3,7 @@ const UserController = require('../controllers/admin/UserController');
 const MenuController = require('../controllers/admin/role/MenuController');
 const UserGroupController = require('../controllers/admin/role/UserGroupController');
 const PermissionController = require('../controllers/admin/role/PermissionController');
-const PurposeController = require('../controllers/admin/PurposeController');
+const VisitPlaceController = require('../controllers/admin/VisitPlaceController');
 const VisitorController = require('../controllers/admin/VisitorController');
 const ReportController = require('../controllers/admin/ReportController');
 const MemberStaffController = require('../controllers/admin/MemberStaffController');
@@ -76,14 +76,14 @@ router.post('/visitor/member-availability-check', [Auth, CheckPermission('/admin
 router.post('/visitor/view-guest', [Auth, CheckPermission('/admin/visitor/view-guest'), VisitorController.viewGuest]);
 // purpose routes
 router
-    .route('/purpose')
-    .get([Auth, CheckPermission('/admin/purpose'), PurposeController.index])
+    .route('/visit-place')
+    .get([Auth, CheckPermission('/admin/visit-place'), VisitPlaceController.index])
     .post([
-        Auth, CheckPermission('/admin/purpose'),
-        check('purpose').not().isEmpty().withMessage('Purpose field is required !'),
-        PurposeController.store
+        Auth, CheckPermission('/admin/visit-place'),
+        check('place').not().isEmpty().withMessage('Visit place is required !'),
+        VisitPlaceController.store
     ]);
-router.get('/purpose/datatable-ajax', [Auth, CheckPermission('/admin/purpose/datatable-ajax'), PurposeController.purposeDatatableAjax]);
+router.get('/visit-place/datatable-ajax', [Auth, CheckPermission('/admin/visit-place/datatable-ajax'), VisitPlaceController.visitPlaceDatatableAjax]);
 // reports route
 router.get('/report/module',[Auth, CheckPermission('/admin/report/module'), ReportController.index]);
 router.get('/report/general',[Auth, CheckPermission('/admin/report/general'), ReportController.generalReport]);
