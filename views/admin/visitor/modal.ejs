@@ -95,29 +95,29 @@
 										<div id="member_staff_dropdown_with_checkbox">
 											<div class="form-group" id="member_staff_dropdown">
 												<label for="inputPassword3"
-													class="col-sm-3 control-label">Member/Staff</label>
-												<div class="col-sm-7">
+													class="col-sm-3 control-label">Member</label>
+												<div class="col-sm-7" id="selectbox">
 													<select class="form-control select2" name="_id" id="_id"
 														style="width: 100%;">
 														<option value="" disabled="" selected="true">- - - Select - - -
 														</option>
 														<% member_staffs.forEach((value,index)=>{ %>
 															<option
-																value="<%= value['membership_id']+' '+ value['_id']+' '+value['status']+' '+value['mobile']+' '+value['name'] %>">
-																<%= value['name']+' - '+value['membership_id'] %>
+																value="<%= value['member_staff_id']+' '+ value['_id']+' '+value['is_active']+' '+value['mobile']+' '+value['name'] %>">
+																<%= value['name']+' - '+value['member_staff_id'] %>
 															</option>
 															<% }) %>
 													</select>
 												</div>
 											</div>
 
-											<div class="col-md-2">
+											<div class="col-md-2" id="is_staff_checkbox">
+												<label>
 												<div class="checkbox">
-													<label>
-														<input name="is_staff" value="staff" id="is_staff"
+														<input name="is_staff" value="" id="is_staff"
 															type="checkbox">&nbsp;&nbsp; <b>Is Staff</b>
-													</label>
 												</div>
+											</label>
 											</div>
 										</div>
 
@@ -125,8 +125,8 @@
 											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Membership
 												No</label>
 											<div class="col-sm-9">
-												<input type="text" class="form-control" name="membership_id"
-													id="membership_id" placeholder="Membership no" readonly="">
+												<input type="text" class="form-control" name="member_staff_id"
+													id="member_staff_id" placeholder="Membership no" readonly="">
 											</div>
 										</div>
 
@@ -154,7 +154,9 @@
 												<select class="form-control select2" name="visit_place" id="visit_place"
 													style="width: 100%;">
 													<option value="" disabled="" selected="">- - - Select - - -</option>
-													<option value="Bar">Bar</option>
+													<% places.forEach((visit,index)=>{ %>
+													     <option value="<%= visit['place'] %>"><%= visit['place'] %></option>
+													<% }) %>
 												</select>
 											</div>
 										</div>
@@ -163,7 +165,7 @@
 											<label for="inputPassword3"
 												class="col-sm-3 control-label pt-10">Remarks</label>
 											<div class="col-sm-9">
-												<textarea class="form-control" rows="3" name="remarks" id="remarks"
+												<textarea class="form-control input-sm" rows="3" name="remarks" id="remarks"
 													placeholder="Enter remarks (if any)"></textarea>
 											</div>
 										</div>

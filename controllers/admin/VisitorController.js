@@ -4,11 +4,14 @@ const multiparty = require('multiparty');
 const moveFile = require('move-file');
 const { respondWithError, respondWithSuccess, convertTime12to24 } = require('../../controllers/admin/ResponseController');
 const VisitorInfo = require('../../model/VisitorModel');
+const MemberStaff = require('../../model/MemberStaffModel');
+const Visitplace = require('../../model/VisitPlaceModel');
 
 const VisitorController = {
     index: async (req, res) => {
-        const member_staffs = await User.find({ status: 1 }).select('-password');
-        res.render('admin/visitor/index', { title: 'Visitor List', member_staffs });
+        const member_staffs = await MemberStaff.find({ is_member: 'member' });
+        const places = await Visitplace.find({ status: 1 });
+        res.render('admin/visitor/index', { title: 'Visitor List', member_staffs, places });
     },
     store: async (req, res) => {
         const form = new multiparty.Form();
@@ -19,8 +22,8 @@ const VisitorController = {
             form.parse(req, async (err, fields, files) => {
                 if (err) return respondWithError(req, res, msg = 'Validation Error', err, 422);
                 if (fields.visitor_type == '') return respondWithError(req, res, msg = 'Visitor type is required!', errors = [], 422);
-                if (fields.membership_id[0] == '') return respondWithError(req, res, msg = 'Membership id is required!', errors = [], 422);
-                var is_image_exist = await VisitorInfo.find({ "$and": [{ "visitor_info.member.membership_id": fields.membership_id[0] }, { "visitor_info.member.image": { $ne: '' } }] });
+                if (fields.member_staff_id[0] == '') return respondWithError(req, res, msg = 'Membership id is required!', errors = [], 422);
+                var is_image_exist = await VisitorInfo.find({ "$and": [{ "visitor_info.member.member_staff_id": fields.member_staff_id[0] }, { "visitor_info.member.image": { $ne: '' } }] });
                 if (is_image_exist.length > 0) {
                     file_name = is_image_exist[0]['visitor_info']['member']['image'];
                 } else {
@@ -37,18 +40,21 @@ const VisitorController = {
                 var visitor_obj = {
                     visitor_info: {
                         member: {
-                            _id: fields._id[0].split(' ')[1],
-                            name: fields._id[0].split(' ')[4],
-                            membership_id: fields.membership_id[0],
+                            _id: fields.visitor_type[0] != 'Affiliated' ? fields._id[0].split(' ')[1] : '',
+                            name: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Guest' ? fields._id[0].split(' ')[4]: fields.aff_member_name[0],
+                            member_staff_id:  fields.member_staff_id[0],
                             image: file_name,
+                            type : fields.is_staff ? fields.is_staff[0] : 'member', // type whom the guest to visit. e.g member or staff
                             visitor_type: fields.visitor_type[0],
-                            is_member_ref: fields.visitor_type[0] == 'Guest' || fields.visitor_type[0] == 'Affiliated' ? true : false,
+                            is_member_ref: fields.visitor_type[0] == 'Guest' ? true : false,
                             date: (new Date().toLocaleDateString()).split('/').join('-'),
                             time_in: new Date().toLocaleTimeString(),
                             time_out: new Date().toLocaleTimeString(),
                             meeting_status: 'checkedin',
+                            spouse : fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Affiliated' ? fields.spouse[0] : 0,
+                            children : fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Affiliated' ? fields.children[0] : 0,
                             duration: 0,
-                            visit_place: fields.visit_place ? fields.visit_place[0] : '',
+                            visit_place: fields.visit_place ? fields.visit_place[0] : '-:-',
                             remarks: fields.remarks[0],
                             guests: JSON.parse(fields.guests) ? JSON.parse(fields.guests) : []
                         }
@@ -73,7 +79,7 @@ const VisitorController = {
         var recordsFiltered;
         if (searchStr) {
             var regex = new RegExp(searchStr, "i");
-            searchStr = { $or: [{ 'visitor_info.member.name': regex }, { 'visitor_info.member.membership_id': regex }, { 'visitor_info.member.visitor_type': regex }, { 'visitor_info.member.date': regex }, { 'visitor_info.member.time_in': regex }, { 'visitor_info.member.time_out': regex }, { 'visitor_info.member.meeting_status': regex }, { 'visitor_info.member.visit_place': regex }, { 'visitor_info.member.remarks': regex }] };
+            searchStr = { $or: [{ 'visitor_info.member.name': regex }, { 'visitor_info.member.member_staff_id': regex }, { 'visitor_info.member.visitor_type': regex }, { 'visitor_info.member.date': regex }, { 'visitor_info.member.time_in': regex }, { 'visitor_info.member.time_out': regex }, { 'visitor_info.member.meeting_status': regex }, { 'visitor_info.member.visit_place': regex }, { 'visitor_info.member.remarks': regex }] };
             var visits = await VisitorInfo.find(searchStr).sort({ 'createdAt': -1 });
             recordsFiltered = await VisitorInfo.count(searchStr);
         } else {
@@ -100,7 +106,7 @@ const VisitorController = {
                 }
                 var action = "<a data-toggle='modal' data-target='#view_guest_modal' class='btn-primary btn btn-rounded' id='guests' data-id='" + visit['_id'] + "' style='padding:0px 4px;' href='#'><i class='glyphicon glyphicon-eye-open'></i></a>";
                 nestedData = {
-                    membership_id: visit['visitor_info']['member']['membership_id'],
+                    member_staff_id: visit['visitor_info']['member']['member_staff_id'],
                     visitor_type: visit['visitor_info']['member']['visitor_type'],
                     name: visit['visitor_info']['member']['name'] ? visit['visitor_info']['member']['name'] : '-',
                     image: image,
@@ -164,22 +170,22 @@ const VisitorController = {
     },
     memberAvailability: async (req, res) => {
         try {
-            var membership_id = req.body.membership_id;
+            var member_staff_id = req.body.member_staff_id;
             var mobile = req.body.mobile;
-            var user_status = req.body.user_status == 1 ? "<span class='label label-success'>Active</span>" : "<span class='label label-danger'>Inactive</span>";
+            var is_active = req.body.is_active == 'Y' ? "<span class='label label-success'>Active</span>" : "<span class='label label-danger'>Inactive</span>";
             var member = {};
             // Improve it later on
             var agg_data = await VisitorInfo.aggregate([
                 {
                     $lookup: {
-                        from: 'users',
-                        localField: 'visitor_info.member.membership_id',
-                        foreignField: 'membership_id',
-                        as: 'user'
+                        from: 'memberstaffs',
+                        localField: 'visitor_info.member.member_staff_id',
+                        foreignField: 'member_staff_id',
+                        as: 'member_staff'
                     }
                 },
-                { $match: { 'user.membership_id': { "$eq": membership_id } } },
-                { $project: { "user.status": 1, "user.membership_id": 1, "user.mobile": 1, "visitor_info.member.date": 1, "visitor_info.member.meeting_status": 1, "visitor_info.member.duration": 1 } },
+                { $match: { 'member_staff.member_staff_id': { "$eq": member_staff_id } } },
+                { $project: { "member_staff.is_active": 1, "member_staff.member_staff_id": 1, "member_staff.mobile": 1, "visitor_info.member.date": 1, "visitor_info.member.meeting_status": 1, "visitor_info.member.duration": 1 } },
             ]);
 
             if (agg_data.length > 0) {
@@ -189,9 +195,9 @@ const VisitorController = {
                         && (data.visitor_info.member.meeting_status == 'checkedin' && data.visitor_info.member.duration == 0);
                 });
 
-                member['membership_id'] = agg_data[0]['user'][0]['membership_id'];
-                member['membership_status'] = agg_data[0]['user'][0]['status'] == 1 ? "<span class='label label-success'>Active</span>" : "<span class='label label-danger'>Inactive</span>";
-                member['mobile'] = agg_data[0]['user'][0]['mobile'];
+                member['member_staff_id'] = agg_data[0]['member_staff'][0]['member_staff_id'];
+                member['is_active'] = agg_data[0]['member_staff'][0]['is_active'] == 'Y' ? "<span class='label label-success'>Active</span>" : "<span class='label label-danger'>Inactive</span>";
+                member['mobile'] = agg_data[0]['member_staff'][0]['mobile'];
 
                 if (filtered_data.length > 0) {
                     member['availability'] = "<span class='label label-danger'>Unavilable</span>";
@@ -200,8 +206,8 @@ const VisitorController = {
                 }
                 return respondWithSuccess(req, res, msg = 'Member availability check !', data = member, 200);
             } else {
-                member['membership_id'] = membership_id;
-                member['membership_status'] = user_status;
+                member['member_staff_id'] = member_staff_id;
+                member['is_active'] = is_active;
                 member['mobile'] = mobile;
                 member['availability'] = "<span class='label label-success'>Avilable</span>";
                 return respondWithSuccess(req, res, msg = 'Member availability check !', data = member, 200);

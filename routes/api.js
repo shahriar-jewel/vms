@@ -9,7 +9,6 @@ router.get('/logout', LoginController.logout);
 router.get('/refresh-token', LoginController.refreshToken);
 // router.get('/infor', auth, LoginController.getUser);
 
-router.post('/visitorinfo/v2', apiauth,
-    VisitorController.getVisitorPayload);
+router.post('/visitorinfo/v2', apiauth, VisitorController.getVisitorPayload);
 
 module.exports = router;

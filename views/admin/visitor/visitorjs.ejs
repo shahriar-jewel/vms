@@ -14,7 +14,7 @@
 
                 },
                 columns: [{
-                    "data": 'membership_id'
+                    "data": 'member_staff_id'
                 }, {
                     "data": 'visitor_type'
                 }, {
@@ -133,32 +133,39 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $(".visit_place").animate({ "opacity": "hide", top: "200" }, 500);
-        $("#aff_member_name").animate({ "opacity": "hide"}, 500);
-        $("#guest_entry").animate({ "opacity": "hide"}, 500);
-        $("#relatives").animate({ "opacity": "show"}, 500);
+        $("#aff_member_name").animate({ "opacity": "hide" }, 500);
+        $("#guest_entry").animate({ "opacity": "hide" }, 500);
+        $("#relatives").animate({ "opacity": "show" }, 500);
+        $("#is_staff_checkbox").animate({ "opacity": "hide" }, 500);
+        $("#selectbox").attr('class', 'col-sm-9');
 
         $('.visitor_type').on('click', function () {
-            if($(this).val() == 'Affiliated'){
-                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "hide"}, 500);
-                $("#aff_member_name").animate({ "opacity": "show"}, 500);
-                $("#membership_id").removeAttr('readonly');
-                $("#guest_entry").animate({ "opacity": "hide"}, 500);
-                $("#relatives").animate({ "opacity": "show"}, 500);
-                $(".visit_place").animate({ "opacity": "show"}, 500);
-            }else if($(this).val() == 'Guest'){
-                $("#guest_entry").animate({ "opacity": "show"}, 500);
-                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "show"}, 500);
-                $("#aff_member_name").animate({ "opacity": "hide"}, 500);
-                $("#membership_id").attr('readonly',true);
-                $("#relatives").animate({ "opacity": "hide"}, 500);
-                $(".visit_place").animate({ "opacity": "show"}, 500);
-            }else if($(this).val() == 'Member'){
-                $("#guest_entry").animate({ "opacity": "hide"}, 500);
-                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "show"}, 500);
-                $("#membership_id").attr('readonly',true);
-                $("#relatives").animate({ "opacity": "show"}, 500);
-                $("#aff_member_name").animate({ "opacity": "hide"}, 500);
-                $(".visit_place").animate({ "opacity": "hide"}, 500);
+            if ($(this).val() == 'Affiliated') {
+                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "hide" }, 500);
+                $("#aff_member_name").animate({ "opacity": "show" }, 500);
+                $("#member_staff_id").removeAttr('readonly');
+                $("#guest_entry").animate({ "opacity": "hide" }, 500);
+                $("#relatives").animate({ "opacity": "show" }, 500);
+                $(".visit_place").animate({ "opacity": "show" }, 500);
+                $("#is_staff_checkbox").animate({ "opacity": "hide" }, 500);
+            } else if ($(this).val() == 'Guest') {
+                $("#guest_entry").animate({ "opacity": "show" }, 500);
+                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "show" }, 500);
+                $("#aff_member_name").animate({ "opacity": "hide" }, 500);
+                $("#membership_id").attr('readonly', true);
+                $("#relatives").animate({ "opacity": "hide" }, 500);
+                $(".visit_place").animate({ "opacity": "show" }, 500);
+                $("#is_staff_checkbox").animate({ "opacity": "show" }, 500);
+                $("#selectbox").attr('class', 'col-sm-7');
+            } else if ($(this).val() == 'Member') {
+                $("#guest_entry").animate({ "opacity": "hide" }, 500);
+                $("#member_staff_dropdown_with_checkbox").animate({ "opacity": "show" }, 500);
+                $("#member_staff_id").attr('readonly', true);
+                $("#relatives").animate({ "opacity": "show" }, 500);
+                $("#aff_member_name").animate({ "opacity": "hide" }, 500);
+                $(".visit_place").animate({ "opacity": "hide" }, 500);
+                $("#is_staff_checkbox").animate({ "opacity": "hide" }, 500);
+                $("#selectbox").attr('class', 'col-sm-9');
             }
 
             // if ($(this).val() == 'Guest' || $(this).val() == 'Affiliated') {
@@ -176,26 +183,26 @@
 
         // member availability check & set data in footer table
         $('#member_staff_dropdown').on('change', '#_id', function () {
-            $('#membership_id').val($(this).val().split(' ')[0]); // set membership_id
+            $('#member_staff_id').val($(this).val().split(' ')[0]); // set membership_id
 
             var url = '/admin/visitor/member-availability-check';
             var method = 'POST';
-            var membership_id = $(this).val().split(' ')[0];
-            var user_status = $(this).val().split(' ')[2];
+            var member_staff_id = $(this).val().split(' ')[0];
+            var is_active = $(this).val().split(' ')[2];
             var mobile = $(this).val().split(' ')[3];
 
             $.ajax({
                 url: url,
                 method: method,
-                data: { membership_id, user_status, mobile },
+                data: { member_staff_id, is_active, mobile },
                 success: function (response) {
                     $("#member-availability-table").find(".member-availability").remove();
                     // console.log(response);
                     var htmlString = '';
                     if (response.data) {
                         htmlString += '<tr class="member-availability">';
-                        htmlString += '<td>' + response['data']["membership_id"] + '</td>';
-                        htmlString += '<td>' + response['data']["membership_status"] + '</td>';
+                        htmlString += '<td>' + response['data']["member_staff_id"] + '</td>';
+                        htmlString += '<td>' + response['data']["is_active"] + '</td>';
                         htmlString += '<td>' + response['data']["mobile"] + '</td>';
                         htmlString += '<td>' + response['data']["availability"] + '</td>';
                         htmlString += '</tr>';
@@ -364,6 +371,53 @@
                 }
             });
 
+        })
+    })
+</script>
+<!-- If is_staff clicked, then get all staffs -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#is_staff').on('click', function () {
+            var url = '/admin/member-staff/is-staff';
+            var method = 'POST';
+            var is_staff = $(this).val();
+
+            if ($('#is_staff').is(':checked')) {
+                var checkboxvalue = 'staff';
+                $('#is_staff').val('staff');
+            }
+            else {
+                var checkboxvalue = 'member';
+                $('#is_staff').val('member');
+            }
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: { is_member_staff: checkboxvalue },
+                dataType: 'json',
+                success: function (response) {
+                    // console.log(response);
+                    $('select[name="_id"]').empty();
+                    $("#_id").append('<option disabled="" selected="true">- - - Select - - -</option>');
+                    $.each(response.data, function (key, value) {
+                        $('select[name="_id"]').append('<option value="' + value['member_staff_id'] +' '+value['_id']+' '+value['is_active']+' '+value['mobile']+' '+value['name']+ '">' + value.name + '</option>');
+                    });
+
+                },
+                error: function (error) {
+                    console.log(error);
+                    swal({
+                        title: "Access Denied. Please contact with Administrator !",
+                        icon: "error",
+                        closeOnClickOutside: false,
+                        button: "OK!",
+                        className: "myClass",
+                    }).then(() => {
+                        $('#visitor_datatable').DataTable().ajax.reload();
+                    });
+                }
+            });
         })
     })
 </script>

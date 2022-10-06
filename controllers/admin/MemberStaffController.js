@@ -90,6 +90,15 @@ const MemberStaffController = {
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
-    }
+    },
+    getStaff : async (req,res) => {
+        var is_member_staff = req.body.is_member_staff;
+        var memberstaffs = await MemberStaff.find({is_member : is_member_staff});
+        if(memberstaffs){
+            return respondWithSuccess(req, res, 'all member staffs', memberstaffs, 200);
+        }else{
+            return respondWithSuccess(req, res, 'no member staffs', memberstaffs, 200);
+        }
+    },
 }
 module.exports = MemberStaffController;
