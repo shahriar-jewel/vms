@@ -46,7 +46,7 @@ app.set('view engine', 'ejs');
 
 // routes middleware
 app.use('/admin', require('./routes/web'));
-app.use('/api', require('./routes/api'));
+app.use('/api/v1', require('./routes/api'));
 
 app.use(function(req, res, next) {
     res.locals.user = req.user;
