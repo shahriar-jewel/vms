@@ -10,14 +10,10 @@ const VisitorController = {
         const timeNow = new Date().getTime();
         var file_name;
 
-        let full_name = '', mobile = '', from = '', image = '', cardno = '';
-
         form.parse(req, async (err, fields, files) => {
             if(err) return respondWithError(req, res, msg='Validation Error', err, 422);
-            if(!files.image) return respondWithError(req, res, msg='Image is required!', errors=[], 422); 
-            if(!fields.fullname) return respondWithError(req, res, msg='Visitor name is required!', errors=[], 422);
-
-            
+            if (!fields.visitor_type) return respondWithError(req, res, msg = 'Visitor type is required!', errors = [], 200); 
+            if(!fields.member_staff_id) return respondWithError(req, res, msg='Membership Id is required!', errors=[], 200);
 
             const newFilePath = './upload/images/' + timeNow;
             if (files.image) {
@@ -28,31 +24,31 @@ const VisitorController = {
                 file_name = '';
             }
 
-            fullname = fields.fullName[0];
-            mobile = fields.mobileNo[0];
-            from = fields.from[0];
-            image = fileName;
-            cardno = fields.cardno[0];
+            var visitor_obj = {
+                    visitor_info: {
+                        member: {
+                            _id: fields._id[0],
+                            name: fields.name[0],
+                            member_staff_id:  fields.member_staff_id[0],
+                            image: file_name,
+                            type : fields.is_staff ? fields.is_staff[0] : 'member', // type whom the guest to visit. e.g member or staff
+                            visitor_type: fields.visitor_type[0],
+                            is_member_ref: fields.visitor_type[0] == 'Guest' ? true : false,
+                            date: (new Date().toLocaleDateString()).split('/').join('-'),
+                            time_in: new Date().toLocaleTimeString(),
+                            time_out: new Date().toLocaleTimeString(),
+                            meeting_status: 'checkedin',
+                            spouse : fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Affiliated' ? fields.spouse[0] : 0,
+                            children : fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Affiliated' ? fields.children[0] : 0,
+                            duration: 0,
+                            visit_place: fields.visit_place ? fields.visit_place[0] : '-:-',
+                            remarks: fields.remarks[0],
+                            guests: JSON.parse(fields.guests) ? JSON.parse(fields.guests) : []
+                        }
+                    }
+                };
 
-
-            const created_by = {
-                _id: fields.created_id[0],
-                name: fields.created_by[0]
-            };
-
-            const purpose = {
-                _id: fields.purpose_id[0],
-                purposename: fields.purposename[0]
-            };
-            // created_by = fields.id[0];
-
-            const emp_info = {
-                emp_name: fields.emp_name[0],
-                emp_mobile: fields.emp_mobile[0],
-                designation: fields.designation[0],
-                department: fields.department[0]
-            };
-            return res.json({ fullname, file_name, status: true });
+            return res.json(visitor_obj);
         });
     },
 }

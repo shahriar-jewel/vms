@@ -21,19 +21,19 @@ const LoginController = {
             if (!isMatch) return res.status(400).json({ status: false, msg: "Incorrect password." });
 
             // If login success , create access token and refresh token
-            const accesstoken = createAccessToken({ id: user._id, sys_group_id: user.sys_group_id, name: user.name });
-            const refreshtoken = createRefreshToken({ id: user._id, sys_group_id: user.sys_group_id, name: user.name });
+            const accesstoken = createAccessToken({ id: user._id, sys_group_id: user.sys_group.id, name: user.name });
+            const refreshtoken = createRefreshToken({ id: user._id, sys_group_id: user.sys_group.id, name: user.name });
 
             res.cookie('refreshtoken', refreshtoken, {
                 httpOnly: true,
-                path: '/api/refresh-token',
+                path: '/api/v1/refresh-token',
                 maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
             })
 
-            res.json({ accesstoken, status: true })
+            return res.json({ accesstoken, status: true });
 
         } catch (err) {
-            return res.status(500).json({ msg: err.message })
+            return res.status(500).json({ msg: err.message });
         }
     },
     logout: async(req, res) => {
@@ -57,6 +57,15 @@ const LoginController = {
 
         } catch (err) {
             return res.status(500).json({ msg: err.message, status: false })
+        }
+    },
+    getLoggedinUser: async(req, res) => {
+        try {
+            const user = await User.findById(req.user.id).select('-password');
+            if (!user) return respondWithSuccess(req,res,msg='User does not exist.',user='',200);
+             return respondWithSuccess(req,res,msg='Loggedin user information.',user,200);
+        } catch (err) {
+            return respondWithSuccess(req,res,msg=err.message,user='',200);
         }
     },
     
