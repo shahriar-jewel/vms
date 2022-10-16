@@ -104,6 +104,6 @@ router
         MemberStaffController.store
     ]);
 router.get('/member-staff/datatable-ajax', [Auth, CheckPermission('/admin/member-staff/datatable-ajax'), MemberStaffController.memberStaffDatatableAjax]);
-router.post('/member-staff/is-staff', [Auth, CheckPermission('/admin/member-staff/is-staff'), MemberStaffController.getStaff]);
+router.post('/other/is-available', [Auth, CheckPermission('/admin/other/is-available'), VisitorController.getOtherData]);
 
 module.exports = router;

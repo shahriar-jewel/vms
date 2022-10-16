@@ -4,14 +4,17 @@ mongoose.Promise = require('bluebird');
 const visitorPayloadSchema = new mongoose.Schema({
     visitor_info: {
         type: {
-          member: {
+          visitor: {
             _id: { type: String, required: true },
             name: { type: String, required: true },
-            // mobile: { type: String, required: true },
+            mobile: { type: String, required: true },
             member_staff_id: { type: String, required: true },
             visitor_type: { type: String, required: true },
             is_member_ref: { type: Boolean, default: false },
             visit_place: { type: String, default: null},
+            club: { type: String, default: null},     //  For 'Affiliated' visitor type
+            purpose: { type: String, default: null},  // For 'Others' visitor type
+            address: { type: String, default: null},  // For 'Others' visitor type
             date: { type: Date, default: new Date()},
             time_in: { type: Date, default: new Date()},
             time_out: { type: Date, default: new Date()},

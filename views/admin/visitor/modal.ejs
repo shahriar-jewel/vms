@@ -81,22 +81,59 @@
 												<label for="inputPassword3"
 													class="col-sm-1 control-label pt-10">Guest</label>
 											</div>
+											<div class="inline-flex">
+												<input class="visitor_type" style="width: 20px;height: 20px;"
+													name="visitor_type" value="Others" type="radio">
+												<label for="inputPassword3"
+													class="col-sm-1 control-label pt-10">Others</label>
+											</div>
 										</div>
+
+										<!-- fields starts for 'Others' visitor category -->
+										<div class="form-group" id="other_mobile">
+											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Mobile</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="other_mobile"
+													id="other_mbl" maxlength="11" placeholder="Enter your mobile no">
+											</div>
+										</div>
+
+										<div class="form-group" id="other_name">
+											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Name</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="other_name" placeholder="Enter your name">
+											</div>
+										</div>
+
+										<div class="form-group" id="other_address">
+											<label for="inputPassword3"
+												class="col-sm-3 control-label pt-10">Address</label>
+											<div class="col-sm-9">
+												<textarea class="form-control input-sm" rows="3" name="address"
+													placeholder="Enter address"></textarea>
+											</div>
+										</div>
+
+										<div class="form-group" id="other_purpose">
+											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Purpose</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="purpose" placeholder="Enter purpose">
+											</div>
+										</div>
+										<!-- fields ends for 'Others' visitor category -->
 
 										<div class="form-group" id="aff_member_name">
 											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Member
 												Name</label>
 											<div class="col-sm-9">
-												<input type="text" class="form-control" name="aff_member_name"
-													id="aff_member_name" placeholder="Enter affiliated member name">
+												<input type="text" class="form-control" name="name" placeholder="Enter affiliated member name">
 											</div>
 										</div>
 
-										<div id="member_staff_dropdown_with_checkbox">
 											<div class="form-group" id="member_staff_dropdown">
 												<label for="inputPassword3"
 													class="col-sm-3 control-label">Member</label>
-												<div class="col-sm-7" id="selectbox">
+												<div class="col-sm-9" id="selectbox">
 													<select class="form-control select2" name="_id" id="_id"
 														style="width: 100%;">
 														<option value="" disabled="" selected="true">- - - Select - - -
@@ -111,17 +148,7 @@
 												</div>
 											</div>
 
-											<div class="col-md-2" id="is_staff_checkbox">
-												<label>
-												<div class="checkbox">
-														<input name="is_staff" value="" id="is_staff"
-															type="checkbox">&nbsp;&nbsp; <b>Is Staff</b>
-												</div>
-											</label>
-											</div>
-										</div>
-
-										<div class="form-group">
+										<div class="form-group" id="member_staff_id_input">
 											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Membership
 												No</label>
 											<div class="col-sm-9">
@@ -130,12 +157,19 @@
 											</div>
 										</div>
 
+										<div class="form-group" id="club">
+											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Club</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="club" placeholder="Enter affiliated club">
+											</div>
+										</div>
+
 										<div class="form-group" id="relatives">
 											<label for="inputPassword3" class="col-sm-3 control-label">No. Of
-												Relatives</label>
+												Person</label>
 											<div class="col-sm-3">
-												<input type="number" class="form-control" name="self" id="self"
-													placeholder="self">
+												<input type="number" class="form-control" value="1" name="self" id="self"
+													placeholder="self" readonly>
 											</div>
 											<div class="col-sm-3">
 												<input type="number" class="form-control" name="spouse" id="spouse"

@@ -1,12 +1,13 @@
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const { respondWithError, respondWithSuccess } = require('../controllers/admin/ResponseController');
 
 const apiauth = (req, res, next) => {
     try {
         const token = req.headers['authorization'];
-        if (!token) return res.status(400).json({ msg: "Invalid Authentication" });
+        if (!token) return respondWithError(req, res, msg = 'Invalid Authentication !', data ='', 401);
 
         jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
-            if (err) return res.status(400).json({ msg: "Invalid Authentication" });
+            if (err) return respondWithError(req, res, msg = 'Invalid Authentication !', data ='', 401);
 
             req.user = user;
             next();
