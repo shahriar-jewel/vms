@@ -235,10 +235,14 @@ const VisitorController = {
     getOtherData : async (req,res) => { // data of 'Others' visitor_type visitor
         var mobile = req.body.other_mobile;
         var data = await VisitorInfo.find({"$and" : [{"visitor_info.visitor.mobile" : {"$regex" : mobile,"$options" : "i"}},{"visitor_info.visitor.visitor_type" : 'Others'}]}).select("visitor_info.visitor.name visitor_info.visitor.mobile visitor_info.visitor.address visitor_info.visitor.purpose").limit(1);
-        if(data.length > 0){
-            return respondWithSuccess(req, res, msg = 'visitor data !', data, 200);
-        }else{
-            return respondWithError(req, res, msg = 'no data found !', data, 200);
+        try{
+            if(data.length > 0){
+                return respondWithSuccess(req, res, msg = 'visitor data !', data, 200);
+            }else{
+                return respondWithError(req, res, msg = 'no data found !', data, 200);
+            }
+        }catch(err){
+            return res.status(200).json({ msg: err.message });
         }
     },
 }

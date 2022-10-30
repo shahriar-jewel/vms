@@ -14,5 +14,6 @@ router.get('/member-staff', apiauth,MemberStaffController.getMemberStaff);
 router.get('/loggedin-user', apiauth, LoginController.getLoggedinUser);
 
 router.post('/visitor-payload', apiauth, VisitorController.getVisitorPayload);
+router.post('/other/is-available', apiauth, VisitorController.getOtherData);
 
 module.exports = router;

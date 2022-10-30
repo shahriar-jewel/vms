@@ -408,7 +408,14 @@
 
             var other_mobile = $(this).val(); // 'Others' visitor_type visitor mobile no
 
-            if (other_mobile != '' && (other_mobile.substr(0, 5).length == 5)) {
+            if (other_mobile === '') {
+                $('#other_mbl').val('');
+                $('#other_nm').val('');
+                $('#other_adrs').val('');
+                $('#other_prps').val('');
+            }
+
+            if (other_mobile != '' && (other_mobile.substr(0, 6).length === 6)) {
                 $.ajax({
                     url: url,
                     method: method,
@@ -416,7 +423,12 @@
                     dataType: 'json',
                     success: function (response) {
                         console.log(response);
-
+                        if (response.status !== 'failed') {
+                            $('#other_mbl').val(response.data[0]['visitor_info']['visitor']['mobile']);
+                            $('#other_nm').val(response.data[0]['visitor_info']['visitor']['name']);
+                            $('#other_adrs').val(response.data[0]['visitor_info']['visitor']['address']);
+                            $('#other_prps').val(response.data[0]['visitor_info']['visitor']['purpose']);
+                        }
                     },
                     error: function (error) {
                         console.log(error);
