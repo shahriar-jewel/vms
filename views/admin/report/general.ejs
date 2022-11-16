@@ -67,7 +67,6 @@
               <th>Membership Id</th>
               <th>Member Name</th>
               <th>Visitor Type</th>
-              <th>Date</th>
               <th>In Time</th>
               <th>Out Time</th>
               <th>Duration</th>
@@ -161,16 +160,20 @@
             $("#data-holder").find(".data-item").remove();
             var log = "";
             $.each(response['data'], function (index, item) {
+              let timein_date = new Date(item['visitor_info']['visitor']['time_in']).toLocaleDateString('en-ca');
+              let timein_time = new Date(item['visitor_info']['visitor']['time_in']).toLocaleTimeString();
+
+              let timeout_date = new Date(item['visitor_info']['visitor']['time_out']).toLocaleDateString('en-ca');
+              let timeout_time = new Date(item['visitor_info']['visitor']['time_out']).toLocaleTimeString();
               log += "<tr class='data-item' style='font-size: 12px;'>"
-              log += "<td>" + item['visitor_info']['member']['membership_id'] + "</td>"
-              log += "<td>" + item['visitor_info']['member']['name'] + "</td>"
+              log += "<td>" + item['visitor_info']['visitor']['member_staff_id'] + "</td>"
+              log += "<td>" + item['visitor_info']['visitor']['name'] + "</td>"
               // log += "<td><img src='/images/" + item.image + "' width='100' style='cursor:pointer;border-radius:50%;' class='h-75 align-self-end zoom' alt='' /></td>"
-              log += "<td>" + item['visitor_info']['member']['visitor_type'] + "</td>"
-              log += "<td>" + item['visitor_info']['member']['date'] + "</td>"
-              log += "<td>" + item['visitor_info']['member']['time_in'] + "</td>"
-              log += "<td>" + item['visitor_info']['member']['time_out'] + "</td>"
-              log += "<td>" + item['visitor_info']['member']['duration'] + "</td>"
-              log += "<td>" + item['visitor_info']['member']['visit_place'] + "</td>"
+              log += "<td>" + item['visitor_info']['visitor']['visitor_type'] + "</td>"
+              log += "<td>" + timein_date+' '+timein_time + "</td>"
+              log += "<td>" + timeout_date+' '+timeout_time + "</td>"
+              log += "<td>" + item['visitor_info']['visitor']['duration'] + "</td>"
+              log += "<td>" + item['visitor_info']['visitor']['visit_place'] + "</td>"
               log += "</tr>";
             });
             $("#data-holder").append(log);

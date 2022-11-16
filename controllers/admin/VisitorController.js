@@ -2,7 +2,7 @@ const User = require('../../model/UserModel');
 const jwt = require('jsonwebtoken');
 const multiparty = require('multiparty');
 const moveFile = require('move-file');
-const { respondWithError, respondWithSuccess, convertTime12to24 } = require('../../controllers/admin/ResponseController');
+const { respondWithError, respondWithSuccess, convertTime12to24, dhm } = require('../../controllers/admin/ResponseController');
 const VisitorInfo = require('../../model/VisitorModel');
 const MemberStaff = require('../../model/MemberStaffModel');
 const Visitplace = require('../../model/VisitPlaceModel');
@@ -52,8 +52,9 @@ const VisitorController = {
                             visitor_type: fields.visitor_type[0],
                             is_member_ref: fields.visitor_type[0] == 'Guest' ? true : false,
                             date: (new Date().toLocaleDateString()).split('/').join('-'),
-                            time_in: new Date().toLocaleTimeString(),
-                            time_out: new Date().toLocaleTimeString(),
+                            // time_in: new Date().toLocaleTimeString(),
+                            time_in: new Date(),
+                            time_out: new Date(),
                             meeting_status: 'checkedin',
                             spouse: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Affiliated' ? fields.spouse[0] : 0,
                             children: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Affiliated' ? fields.children[0] : 0,
@@ -62,6 +63,7 @@ const VisitorController = {
                             address: fields.address ? fields.address[0] : null,
                             purpose: fields.purpose ? fields.purpose[0] : null,
                             remarks: fields.remarks[0],
+                            platform: 'Web',
                             guests: JSON.parse(fields.guests) ? JSON.parse(fields.guests) : []
                         }
                     }
@@ -100,6 +102,12 @@ const VisitorController = {
         if (visits) {
             visits.map((visit, i) => {
                 var image = '', meeting_status;
+                let timein_date = (visit['visitor_info']['visitor']['time_in']).toLocaleDateString('en-ca');
+                let timein_time = (visit['visitor_info']['visitor']['time_in']).toLocaleTimeString();
+
+                let timeout_date = (visit['visitor_info']['visitor']['time_out']).toLocaleDateString('en-ca');
+                let timeout_time = (visit['visitor_info']['visitor']['time_out']).toLocaleTimeString();
+
                 if (visit['visitor_info']['visitor']['image'] != '') {
                     image = '<img src="/images/' + visit['visitor_info']['visitor']['image'] + '" class="zoom profile-user-img img-responsive img-circle img-sm" alt="Member Image">';
                 } else {
@@ -118,8 +126,8 @@ const VisitorController = {
                     image: image,
                     meeting_status,
                     date: visit['visitor_info']['visitor']['date'],
-                    time_in: visit['visitor_info']['visitor']['time_in'],
-                    time_out: visit['visitor_info']['visitor']['time_out'],
+                    time_in: timein_date+' '+timein_time,
+                    time_out: timeout_date+' '+timeout_time,
                     duration: visit['visitor_info']['visitor']['duration'],
                     actions: visit['visitor_info']['visitor']['visitor_type'] == 'Guest' ? action : ''
                 };
@@ -139,29 +147,19 @@ const VisitorController = {
     },
     meetingCheckout: async (req, res) => {
         try {
-            var visit_data = await VisitorInfo.findById(req.body._id, { "visitor_info.visitor.meeting_status": 1, "visitor_info.visitor.time_out": 1, "visitor_info.visitor.duration": 1, "visitor_info.visitor.date": 1 });
+            var visit_data = await VisitorInfo.findById(req.body._id, { "visitor_info.visitor.meeting_status": 1, "visitor_info.visitor.time_out": 1, "visitor_info.visitor.duration": 1, "visitor_info.visitor.date": 1,"createdAt": 1 });
             var timeout, timein, hour, minute, temp, duration;
             if (visit_data) {
-                if (visit_data.visitor_info.visitor.date != (new Date().toLocaleDateString()).split('/').join('-')) return respondWithError(req, res, msg = 'Checkin & Checkout not in same date !', data = [], 200);
                 await VisitorInfo.updateOne(
                     { "_id": req.body._id },
-                    { $set: { "visitor_info.visitor.time_out": new Date().toLocaleTimeString() } }
+                    { $set: { "visitor_info.visitor.time_out": new Date() } }
                 );
                 var visit = await VisitorInfo.findById(req.body._id, { "visitor_info.visitor.meeting_status": 1, "visitor_info.visitor.time_in": 1, "visitor_info.visitor.time_out": 1, "visitor_info.visitor.duration": 1, "visitor_info.visitor.date": 1 });
-                timeout = convertTime12to24(visit.visitor_info.visitor.time_out);
-                timein = convertTime12to24(visit.visitor_info.visitor.time_in);
-                if (parseInt(timein.split(':')[1]) > parseInt(timeout.split(':')[1])) {
-                    hour = parseInt(timeout.split(':')[0]) - parseInt(timein.split(':')[0]);
-                    minute = parseInt(timein.split(':')[1]) - parseInt(timeout.split(':')[1]);
-                    hour = (hour * 60) - minute;
-                    temp = hour;
-                    hour = Math.floor(hour / 60);
-                    minute = temp % 60;
-                } else {
-                    hour = parseInt(timeout.split(':')[0]) - parseInt(timein.split(':')[0]);
-                    minute = parseInt(timeout.split(':')[1]) - parseInt(timein.split(':')[1]);
-                }
-                duration = hour + 'h' + ' ' + minute + 'm';
+                const t1 = (new Date('2022-11-15T17:01:11.407+00:00')).getTime();
+                const t2 = (new Date('2022-11-17T18:01:11.407+00:00')).getTime();
+                timeout = (visit.visitor_info.visitor.time_out).getTime();
+                timein = (visit.visitor_info.visitor.time_in).getTime();
+                duration = dhm(Math.abs(timeout - timein));
                 await VisitorInfo.updateOne(
                     { "_id": req.body._id },
                     { $set: { "visitor_info.visitor.meeting_status": 'checkedout', "visitor_info.visitor.duration": duration } }

@@ -100,5 +100,11 @@ const MemberStaffController = {
             return respondWithSuccess(req, res, 'no member staffs', memberstaffs, 200);
         }
     },
+    bulkUploadIndex : async (req,res) => {
+        return res.render('admin/member/bulkupload');
+    },
+    bulkUpload: async(req,res) => {
+        res.send('okkk')
+    }
 }
 module.exports = MemberStaffController;

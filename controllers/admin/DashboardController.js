@@ -4,7 +4,7 @@ const todayVisitorProvider = async (req, res) => {
     try {
         var data = await VisitorInfo.find(
             {
-                "visitor_info.member.date": (new Date().toLocaleDateString()).split('/').join('-')
+                "visitor_info.visitor.date": (new Date().toLocaleDateString()).split('/').join('-')
             });
         return data;
     } catch (err) {
@@ -34,7 +34,7 @@ const weekVisitorProvider = async (req, res) => {
                 {
                     $match:
                     {
-                        $and: [{ week: today.getWeek() - 2 }, { year: today.getFullYear() }]
+                        $and: [{ week: today.getWeek() - 1 }, { year: today.getFullYear() }]
                     }
                 }
             ]
@@ -62,7 +62,7 @@ const monthVisitorProvider = async (req, res) => {
                 {
                     $match:
                     {
-                        $and: [{ month: today.getMonth() }, { year: today.getFullYear() }]
+                        $and: [{ month: today.getMonth()+1 }, { year: today.getFullYear() }]
                     }
                 }
             ]
@@ -78,8 +78,8 @@ const todayMemberProvider = async (req, res) => {
         var data = await VisitorInfo.find(
             {
                 "$and" : [
-                    {"visitor_info.member.date": (new Date().toLocaleDateString()).split('/').join('-')},
-                    {"visitor_info.member.visitor_type" : 'Member'}
+                    {"visitor_info.visitor.date": (new Date().toLocaleDateString()).split('/').join('-')},
+                    {"visitor_info.visitor.visitor_type" : 'Member'}
                 ]
             });
         return data;
@@ -109,7 +109,7 @@ const weekMemberProvider = async (req, res) => {
                 {
                     $match:
                     {
-                        $and: [{ week: today.getWeek() - 2 }, { year: today.getFullYear() },{ "visitor_info.member.visitor_type": 'Member' }]
+                        $and: [{ week: today.getWeek() - 1 }, { year: today.getFullYear() },{ "visitor_info.visitor.visitor_type": 'Member' }]
                     }
                 }
             ]
@@ -137,7 +137,7 @@ const monthMemberProvider = async (req, res) => {
                 {
                     $match:
                     {
-                        $and: [{ month: today.getMonth() }, { year: today.getFullYear() },{ "visitor_info.member.visitor_type": 'Member' }]
+                        $and: [{ month: today.getMonth()+1 }, { year: today.getFullYear() },{ "visitor_info.visitor.visitor_type": 'Member' }]
                     }
                 }
             ]

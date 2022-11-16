@@ -1,0 +1,48 @@
+<style type="text/css">
+    .box-body {
+        background-color: white;
+    }
+
+    .box-title {
+        color: white;
+    }
+
+    .box-header {
+        background-color: #105e7d;
+    }
+</style>
+
+<body>
+
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <div class="box-body" style="padding: 4px;">
+                    <form action="/admin/member/bulk-upload" method="post" id="member_upload_form" autocomplete="off">
+                        <div class="form-group">
+                            <label for="inputPassword3" class="col-sm-3 control-label pt-10">Upload File</label>
+                            <div class="col-sm-9">
+                                <input type="file" onchange="readURL(this);"
+                                    style="background-color: lavender;" class="form-control"
+                                    name="member_file" id="member_file">
+                            </div>
+                        </div>
+                        <button type="button" id="member_upload" class="btn btn-primary">Upload</button>
+                    </form>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </div>
+    <!-- /.content -->
+    <div class="clearfix"></div>
+</body>
+<script>
+    $(document).ready(function(){
+        $('#member_upload').on('click',function(){
+        $('#member_upload_form').submit();
+    });
+    })
+</script>

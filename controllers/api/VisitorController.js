@@ -40,8 +40,8 @@ const VisitorController = {
                         visitor_type: fields.visitor_type[0],
                         is_member_ref: fields.visitor_type[0] == 'Guest' ? true : false,
                         date: (new Date().toLocaleDateString()).split('/').join('-'),
-                        time_in: new Date().toLocaleTimeString(),
-                        time_out: new Date().toLocaleTimeString(),
+                        time_in: new Date(),
+                        time_out: new Date(),
                         meeting_status: 'checkedin',
                         spouse: fields.spouse[0],
                         children: fields.children[0],
@@ -50,6 +50,7 @@ const VisitorController = {
                         address: fields.address[0],
                         purpose: fields.purpose[0],
                         remarks: fields.remarks[0],
+                        platform: 'Tab',
                         guests: JSON.parse(fields.guests) ? JSON.parse(fields.guests) : []
                     }
                 }
@@ -63,16 +64,16 @@ const VisitorController = {
             }
         });
     },
-    getOtherData : async (req,res) => {
+    getOtherData: async (req, res) => {
         var mobile = req.body.mobile;
-        var data = await VisitorInfo.find({"$and" : [{"visitor_info.visitor.mobile" : {"$regex" : mobile,"$options" : "i"}},{"visitor_info.visitor.visitor_type" : 'Others'}]}).select("visitor_info.visitor.name visitor_info.visitor.mobile visitor_info.visitor.address visitor_info.visitor.purpose").limit(1);
-        try{
-            if(data.length > 0){
+        var data = await VisitorInfo.find({ "$and": [{ "visitor_info.visitor.mobile": { "$regex": mobile, "$options": "i" } }, { "visitor_info.visitor.visitor_type": 'Others' }] }).select("visitor_info.visitor.name visitor_info.visitor.mobile visitor_info.visitor.address visitor_info.visitor.purpose").limit(1);
+        try {
+            if (data.length > 0) {
                 return respondWithSuccess(req, res, msg = 'visitor data !', data, 200);
-            }else{
+            } else {
                 return respondWithError(req, res, msg = 'no data found !', data, 200);
             }
-        }catch(err){
+        } catch (err) {
             return res.status(200).json({ msg: err.message });
         }
     },

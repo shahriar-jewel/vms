@@ -85,11 +85,11 @@ router
     ]);
 router.get('/visit-place/datatable-ajax', [Auth, CheckPermission('/admin/visit-place/datatable-ajax'), VisitPlaceController.visitPlaceDatatableAjax]);
 // reports route
-router.get('/report/module',[Auth, CheckPermission('/admin/report/module'), ReportController.index]);
-router.get('/report/general',[Auth, CheckPermission('/admin/report/general'), ReportController.generalReport]);
-router.post('/report/general/ajax',[Auth, CheckPermission('/admin/report/general/ajax'), ReportController.generalReportAjax]);
-router.get('/report/member',[Auth, CheckPermission('/admin/report/member'), ReportController.memberReport]);
-router.post('/report/member/ajax',[Auth, CheckPermission('/admin/report/member/ajax'), ReportController.memberReportAjax]);
+router.get('/report/module', [Auth, CheckPermission('/admin/report/module'), ReportController.index]);
+router.get('/report/general', [Auth, CheckPermission('/admin/report/general'), ReportController.generalReport]);
+router.post('/report/general/ajax', [Auth, CheckPermission('/admin/report/general/ajax'), ReportController.generalReportAjax]);
+router.get('/report/member', [Auth, CheckPermission('/admin/report/member'), ReportController.memberReport]);
+router.post('/report/member/ajax', [Auth, CheckPermission('/admin/report/member/ajax'), ReportController.memberReportAjax]);
 
 // Member Staff Routes
 router
@@ -102,6 +102,14 @@ router
         check('email').not().isEmpty().withMessage('Email is required !'),
         check('mobile').not().isEmpty().withMessage('Mobile is required !'),
         MemberStaffController.store
+    ]);
+// Member bulk upload
+router
+    .route('/member/bulk-upload')
+    .get([Auth, CheckPermission('/admin/member/bulk-upload'), MemberStaffController.bulkUploadIndex])
+    .post([
+        Auth, CheckPermission('/admin/member/bulk-upload'),
+        MemberStaffController.bulkUpload
     ]);
 router.get('/member-staff/datatable-ajax', [Auth, CheckPermission('/admin/member-staff/datatable-ajax'), MemberStaffController.memberStaffDatatableAjax]);
 router.post('/other/is-available', [Auth, CheckPermission('/admin/other/is-available'), VisitorController.getOtherData]);
