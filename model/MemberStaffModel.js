@@ -3,12 +3,12 @@ mongoose.Promise = require('bluebird');
 
 const MemberStaffSchema = new mongoose.Schema({
     member_staff_id: {type: String},
-    name: {type: String,required : true},
-    email: {type: String,required : true},
-    mobile: {type: String,required : true},
+    name: {type: String,required : false},
+    email: {type: String,required : false},
+    mobile: {type: String,required : false},
     type: {type: String,default : null},
     is_member: {type: String,default : 'member'},
-    is_active: {type: String,default : 'Y'}, // Y means active, N means inactive
+    is_active: {type: String,default : 'Active'},
 }, {timestamps: true});
 
 module.exports = mongoose.model('MemberStaff', MemberStaffSchema);

@@ -1,6 +1,9 @@
 const { check, validationResult } = require('express-validator');
 const { respondWithError, respondWithSuccess } = require('../../controllers/admin/ResponseController');
 const MemberStaff = require('../../model/MemberStaffModel');
+const readXlsxFile = require("read-excel-file/node");
+const multiparty = require('multiparty');
+const moveFile = require('move-file');
 
 const MemberStaffController = {
     index: async (req, res) => {
@@ -22,7 +25,7 @@ const MemberStaffController = {
                     msg = 'This record is already exists!';
                     return respondWithSuccess(req, res, msg, data, 200);
                 } else {
-                    var data = new MemberStaff({ member_staff_id, name, email, mobile, type, is_member, is_active:'Y' });
+                    var data = new MemberStaff({ member_staff_id, name, email, mobile, type, is_member, is_active: 'Y' });
                     if (data.save()) {
                         data = '';
                         msg = 'Member Added Successfully!';
@@ -46,7 +49,7 @@ const MemberStaffController = {
             var recordsFiltered;
             if (searchStr) {
                 var regex = new RegExp(searchStr, "i");
-                searchStr = { $or: [{ 'member_staff_id': regex }, { 'name': regex }, { 'email': regex }, { 'mobile': regex }, { 'type': regex },{ 'is_member': regex }] };
+                searchStr = { $or: [{ 'member_staff_id': regex }, { 'name': regex }, { 'email': regex }, { 'mobile': regex }, { 'type': regex }, { 'is_member': regex }] };
                 var member_staffs = await MemberStaff.find(searchStr).sort({ 'createdAt': -1 });
                 recordsFiltered = await MemberStaff.count(searchStr);
             } else {
@@ -91,20 +94,78 @@ const MemberStaffController = {
             return res.status(500).json({ msg: err.message });
         }
     },
-    getStaff : async (req,res) => {
+    getStaff: async (req, res) => {
         var is_member_staff = req.body.is_member_staff;
-        var memberstaffs = await MemberStaff.find({is_member : is_member_staff});
-        if(memberstaffs){
+        var memberstaffs = await MemberStaff.find({ is_member: is_member_staff });
+        if (memberstaffs) {
             return respondWithSuccess(req, res, 'all member staffs', memberstaffs, 200);
-        }else{
+        } else {
             return respondWithSuccess(req, res, 'no member staffs', memberstaffs, 200);
         }
     },
-    bulkUploadIndex : async (req,res) => {
+    bulkUploadIndex: async (req, res) => {
         return res.render('admin/member/bulkupload');
     },
-    bulkUpload: async(req,res) => {
-        res.send('okkk')
+    bulkUpload: async (req, res) => {
+        let file_name;
+        const form = new multiparty.Form();
+        const timeNow = new Date().getTime();
+        try {
+            form.parse(req, async (err, fields, files) => {
+                if (err) return respondWithError(req, res, msg = 'Validation Error', err, 422);
+                const newFilePath = './upload/images/' + timeNow;
+                if (files.image[0].originalFilename != '') {
+                    const currentPath = newFilePath + files.image[0].originalFilename;
+                    file_name = timeNow + files.image[0].originalFilename;
+                    await moveFile(files.image[0].path, currentPath);
+
+                    readXlsxFile(currentPath).then((rows) => {
+                        // skip header
+                        rows.shift();
+        
+                        let members = [];
+                        // console.log(rows[3])
+        
+                        rows.forEach((row) => {
+                            let member = {
+                                member_staff_id: row[1],
+                                name: row[2],
+                                type: row[3],
+                                is_active: row[4],
+                                mobile: row[5],
+                                email: row[6],
+                                is_member: 'member'
+                            };
+        
+                            members.push(member);
+                        });
+        
+                        MemberStaff.insertMany(members)
+                            .then(() => {
+                                res.status(200).send({
+                                    message: "Uploaded the file successfully: ",
+                                });
+                            })
+                            .catch((error) => {
+                                res.status(500).send({
+                                    message: "Fail to import data into database!",
+                                    error: error.message,
+                                });
+                            });
+                    });
+
+                } else {
+                    file_name = '';
+                }
+                
+
+
+
+            });
+        } catch (error) {
+            console.log(error);
+            res.status(500).send({message: "Could not upload the file: "});
+        }
     }
 }
 module.exports = MemberStaffController;
