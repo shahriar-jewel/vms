@@ -1,0 +1,199 @@
+<style type="text/css">
+    th {
+        background-color: #3c8dbc;
+        color: white;
+    }
+
+    .box-body {
+        background-color: white;
+    }
+
+    .box-title {
+        color: white;
+    }
+</style>
+
+<section class="content">
+    <div class="col-xs-12 no-padding">
+        <div class="box-header">
+            <h3 class="box-title" style="color: grey;"><i style="color: #0689bd;"
+                    class="fa fa-users"></i>&nbsp;&nbsp;User Management</h3>
+            <a data-toggle="modal" data-target="#user_modal" id="addBtn" data-backdrop="static" data-keyboard="false"
+                href="#"><button class="pull-right" type="button"><i style="color:#0689bd;"
+                        class="glyphicon glyphicon-plus-sign"></i></button></a>
+        </div>
+        <div class="box-body table-responsive">
+            <table id="user_datatable" class="table table-bordered text-center table-striped" width="100%">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Mobile</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <!-- <tbody>
+
+            <tr>
+                <td>1</td>
+                <td>name</td>
+                <td>status</td>
+                <td>created_at</td>
+                <td>updated_at</td>
+                <td>
+                    <a href="#" class='btn-primary btn btn-rounded' style='padding:0px 4px;' href='#'><i
+                            class='glyphicon glyphicon-lock'></i></a>
+                    <a class='btn-success btn btn-rounded' style='padding:0px 4px;' href='#'><i
+                            class='fa fa-edit'></i></a>
+                </td>
+            </tr>
+
+        </tbody> -->
+            </table>
+        </div>
+    </div>
+</section>
+<%- include('modal.ejs') %>
+
+    <script type="text/javascript">
+        "use strict";
+        var KTDatatablesDataSourceAjaxServer = function () {
+            var initTable1 = function () {
+                var base_url = '/admin/user/datatable-ajax';
+                $('#user_datatable').DataTable({
+                    "responsive": true,
+                    "searchDelay": 500,
+                    "processing": true,
+                    "serverSide": true,
+                    "ajax": {
+                        "url": base_url,
+                        "dataType": 'json',
+                    },
+                    columns: [{
+                        "data": 'name'
+                    }, {
+                        "data": 'email'
+                    }, {
+                        "data": 'mobile'
+                    }, {
+                        "data": 'role'
+                    }, {
+                        "data": 'status'
+                    }, {
+                        "data": 'actions'
+                    },]
+
+                });
+            };
+            return {
+                init: function () {
+                    initTable1();
+                },
+            };
+        }();
+        jQuery(document).ready(function () {
+            KTDatatablesDataSourceAjaxServer.init();
+        });
+    </script>
+    <script type="text/javascript">
+        $.ajaxSetup({
+            headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+        });
+        $("#user_form").submit(function (e) {
+            e.preventDefault();
+            var data = $(this).serialize();
+            var url;
+            var method;
+            var id = $('#hidden_user_id').val();
+            if (id) {
+                url = '/admin/user/update';
+                method = 'PUT';
+            } else {
+                url = '/admin/user/';
+                method = 'POST';
+            }
+
+            $.ajax({
+                url: url,
+                method: method,
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    console.log(response);
+                    $('#hidden_user_id').val('');
+                    if (response['statuscode'] === 422) {
+                        var err_msg = '';
+                        response['errors'].forEach((error, index) => {
+                            err_msg += error['msg'] + '\n';
+                        });
+                        swal({
+                            title: response['msg'],
+                            text: err_msg,
+                            button: 'OK'
+                        }).then(() => { });
+                    } else if (response['statuscode'] === 200) {
+                        swal({
+                            title: response['msg'],
+                            button: 'OK'
+                        }).then(() => {
+                            $('#user_modal').modal('hide');
+                            $('#user_datatable').DataTable().ajax.reload();
+                            // $('.form_submit')[0].reset();
+                        });
+                    }
+                },
+                error: function (error) {
+                    console.log(error);
+                    swal({
+                        title: "Access Denied. Please contact with Administrator !",
+                        icon: "error",
+                        closeOnClickOutside: false,
+                        button: "OK!",
+                        className: "myClass",
+                    }).then(() => {
+                        $('#user_modal').modal('hide');
+                        $('#user_datatable').DataTable().ajax.reload();
+                    });
+                }
+            });
+        });
+    </script>
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#user_datatable').on('click', '#editUser', function () {
+                let userId = $(this).attr('data-user_id');
+                $('#hidden_user_id').val(userId);
+                $.ajax({
+                    url: '/admin/user/edit/' + userId,
+                    method: 'GET',
+                    dataType: "json",
+                    success: function (response) {
+                        // console.log(response)
+                        if (response.status === 'success') {
+                            $('#name').val(response.data.name);
+                            $('#email').val(response.data.email);
+                            $('#mobile').val(response.data.mobile);
+                            $('#password_block, #confirm_password_block').hide();
+                            
+                            response.data.status == 1 ? $('#status').prop('checked', true) : $('#status').prop('checked', false);
+                            var selectedData = response.data.sys_group.id+'('+response.data.sys_group.name;
+                            $('#role option[value="'+selectedData+'"]').attr('selected', '').change();
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                })
+            })
+        })
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('#addBtn').on('click',function(){
+                $('#password_block, #confirm_password_block').show();
+            })
+        })
+    </script>

@@ -47,7 +47,29 @@ router
         UserGroupController.store
     ]);
 router.get('/user-group/datatable-ajax', [Auth, CheckPermission('/admin/user-group/datatable-ajax'), UserGroupController.userGroupDatatableAjax]);
-
+// Routes for User management
+router
+    .route('/user')
+    .get([Auth, CheckPermission('/admin/user'), UserController.index])
+    .post([
+        Auth, CheckPermission('/admin/user'),
+        check('name').not().isEmpty().withMessage('Name field is required !'),
+        check('email').not().isEmpty().withMessage('Email field is required !'),
+        check('mobile').not().isEmpty().withMessage('Mobile field is required !'),
+        check('role').not().isEmpty().withMessage('Role is required !'),
+        check('password').not().isEmpty().withMessage('Password is required !'),
+        check('confirm_password').not().isEmpty().withMessage('Confirm password is required !'),
+        UserController.register
+    ]);
+router.get('/user/edit/:id', [Auth, UserController.edit]);
+router.put('/user/update', [
+    Auth,
+    check('name').not().isEmpty().withMessage('Name field is required !'),
+    check('email').not().isEmpty().withMessage('Email field is required !'),
+    check('mobile').not().isEmpty().withMessage('Mobile field is required !'),
+    check('role').not().isEmpty().withMessage('Role is required !'),
+    UserController.update]);
+router.get('/user/datatable-ajax', [Auth, CheckPermission('/admin/user/datatable-ajax'), UserController.userDatatableAjax]);
 // Routes for Permission Management
 router
     .route('/permissions')
@@ -83,6 +105,11 @@ router
         check('place').not().isEmpty().withMessage('Visit place is required !'),
         VisitPlaceController.store
     ]);
+router.get('/visit-place/edit/:id', [Auth, VisitPlaceController.edit]);
+router.put('/visit-place/update', [
+    Auth,
+    check('place').not().isEmpty().withMessage('Visit place is required !'),
+    VisitPlaceController.update]);
 router.get('/visit-place/datatable-ajax', [Auth, CheckPermission('/admin/visit-place/datatable-ajax'), VisitPlaceController.visitPlaceDatatableAjax]);
 // reports route
 router.get('/report/module', [Auth, CheckPermission('/admin/report/module'), ReportController.index]);

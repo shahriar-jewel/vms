@@ -3,7 +3,10 @@ const jwt = require('jsonwebtoken');
 const SysMenu = require('../../model/role/SysMenu');
 const User = require('../../model/UserModel');
 const axios = require('axios');
-const {todayVisitorProvider,weekVisitorProvider,monthVisitorProvider} = require('../admin/DashboardController');
+const { todayVisitorProvider, weekVisitorProvider, monthVisitorProvider, memberCountProvider, affiliatedCountProvider, guestCountProvider, othersCountProvider } = require('../admin/DashboardController');
+const SysUserGroup = require('../../model/role/SysUserGroup');
+const { check, validationResult } = require('express-validator');
+const { respondWithError, respondWithSuccess } = require('./ResponseController');
 
 const UserController = {
     login: async (req, res) => {
@@ -45,81 +48,146 @@ const UserController = {
     },
     register: async (req, res) => {
         try {
-            const { name, email, password,mobile, sys_group_id, sys_group_name,membership_id, status } = req.body;
-            if (name == '' || email == '' || password == '' || sys_group_id == '' || mobile == '' || sys_group_name == '' || membership_id == '') {
-                return res.json('Fillup all the fields!');
-                // req.flash('msg', 'Fillup all the fields!');
-                // return res.redirect('/user/create');
+            const { name, mobile, email, role, password, confirm_password, status } = req.body;
+            let errors = validationResult(req);
+            if (!errors.isEmpty()) {
+                errors = errors.array();
+                msg = 'Validation Error';
+                return respondWithError(req, res, msg, errors, 422);
+            } else {
+                const user = await User.findOne({ email });
+                if (user) {
+                    return respondWithError(req, res, 'User already exists!', errors = [], 422);
+                }
+
+                if (password.length < 6) {
+                    return respondWithError(req, res, 'Password is at least 6 characters long.!', errors = [], 422);
+                }
+
+                if (!(password === confirm_password)) {
+                    return respondWithError(req, res, 'Password & Confirm password do not match.!', errors = [], 422);
+                }
+                const passwordHash = bcrypt.hashSync(password);
+                const newUser = new User({
+                    name,
+                    email,
+                    mobile,
+                    password: passwordHash,
+                    sys_group: {
+                        id: role.split('(')[0],
+                        name: role.split('(')[1]
+                    },
+                    status: 1
+                });
+                // Save mongodb
+                await newUser.save();
+                return respondWithSuccess(req, res, 'User added successfully!', data = '', 200);
             }
-
-            const user = await User.findOne({ email });
-            if (user) {
-                // req.flash('msg', 'User already exists!');
-                // return res.redirect('/user/create');
-                return res.json('User already exists!');
-            }
-
-            if (password.length < 6) {
-                // req.flash('msg', 'Password is at least 6 characters long.!');
-                // return res.redirect('/user/create');
-                return res.json('Password is at least 6 characters long.!');
-            }
-
-            // await User.updateMany(
-            //     {"sys_group" : {$exists : false}},
-            //     { $set:{sys_group:{id:1,name:"Superadmin"}}});
-
-            // Password Encryption
-            const passwordHash = bcrypt.hashSync(password);
-
-            const newUser = new User({
-                name,
-                email,
-                mobile,
-                membership_id,
-                password: passwordHash,
-                sys_group: {
-                    id: sys_group_id,
-                    name: sys_group_name
-                },
-                status: 1
-            })
-
-            // Save mongodb
-            await newUser.save()
-            // req.flash('msg', 'User added successfully!');
-            // return res.redirect('/user');
-            return res.json('User added successfully!');
-
-            // Then create jsonwebtoken to authentication
-            // const accesstoken = createAccessToken({ id: newUser._id })
-            // const refreshtoken = createRefreshToken({ id: newUser._id })
-
-            // res.cookie('refreshtoken', refreshtoken, {
-            //     httpOnly: true,
-            //     path: '/api/refresh_token',
-            //     maxAge: 7 * 24 * 60 * 60 * 1000 // 7d
-            // })
-
-            // res.json({ accesstoken })
 
         } catch (err) {
             return res.status(500).json({ msg: err.message });
         }
     },
+    index: async (req, res) => {
+        var user_groups = await SysUserGroup.find({ status: 1 });
+        return res.render('admin/role/user/index', { user_groups });
+    },
+    edit: async (req, res) => {
+        const user = await User.findById(req.params.id).select('-password');
+        if (!user) return respondWithError(req, res, 'User not found.!', errors = [], 422);
+        return respondWithSuccess(req, res, 'User data!', data = user, 200);
+    },
+    update: async (req, res) => {
+        const { name, mobile, email, role, hidden_user_id, password, confirm_password, status } = req.body;
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            errors = errors.array();
+            msg = 'Validation Error';
+            return respondWithError(req, res, msg, errors, 422);
+        } else {
+            const isUpdate = await User.updateOne(
+                { _id: hidden_user_id },
+                {
+                    $set: { name, mobile, email, 'sys_group.id': role.split('(')[0], 'sys_group.name': role.split('(')[1] }
+                }
+            )
+            if (!isUpdate.ok) return respondWithError(req, res, 'Do not update the record. Something went wrong!', errors, 422);
+            return respondWithSuccess(req, res, 'User updated successfully!', data = '', 200);
+        }
+    },
+    userDatatableAjax: async (req, res) => {
+        try {
+            var searchStr = req.query.search['value'];
+            var limit = req.query.length;
+            var recordsTotal = await User.count({});
+            var recordsFiltered;
+
+            if (searchStr) {
+                var regex = new RegExp(searchStr, "i");
+                searchStr = { $or: [{ 'name': regex }, { 'email': regex }, { 'mobile': regex }, { 'sys_group.name': regex }] };
+                var users = await User.find(searchStr).sort({ 'createdAt': -1 });
+                recordsFiltered = await User.count(searchStr);
+            } else {
+                searchStr = {};
+                var users = await User.find({}).limit(Number(req.query.length)).skip(Number(req.query.start)).sort({ 'createdAt': -1 });
+                recordsFiltered = recordsTotal;
+            }
+
+            var data = [];
+            var nestedData = {};
+            if (users) {
+                var sl = 0;
+                users.map((user, i) => {
+                    var status;
+                    if (user['status'] === 1) {
+                        status = "<span class='label label-success'>Active</span>";
+                    } else if (user['status'] === 0) {
+                        status = "<span class='label label-danger'>Inactive</span>";
+                    }
+
+                    var action = "<a data-toggle='modal' data-target='#user_modal' id='editUser' data-backdrop='static' data-keyboard='false' class='btn-primary btn btn-rounded user_modal' data-user_id='" + user['_id'] + "' style='padding:0px 4px;' href='#'><i class='glyphicon glyphicon-edit'></i></a>";
+                    nestedData = {
+                        name: user['name'],
+                        email: user['email'],
+                        mobile: user['mobile'],
+                        role: user['sys_group']['name'],
+                        status,
+                        actions: action
+                    };
+
+                    data.push(nestedData);
+                })
+            }
+
+            var mytable = JSON.stringify({
+                "draw": req.query.draw,
+                "iTotalRecords": recordsTotal,
+                "iTotalDisplayRecords": recordsFiltered,
+                "limit": limit,
+                "aaData": data
+            });
+            return res.send(mytable);
+        } catch (err) {
+            return res.status(500).json({ msg: err.message })
+        }
+    },
     dashboard: async (req, res) => {
-        try{
-        var today_visitor,today_visitor_count,week_visitor,week_visitor_count,month_visitor,month_visitor_count;
-        today_visitor = await todayVisitorProvider();
-        week_visitor = await weekVisitorProvider();
-        month_visitor = await monthVisitorProvider();
-        today_visitor_count = today_visitor.length;
-        week_visitor_count = week_visitor.length;
-        month_visitor_count = month_visitor.length;
-        // return res.send(week_visitor);
-        return res.render('admin/dashboard',{today_visitor_count,week_visitor_count,month_visitor_count});
-        }catch(err){
-            return res.send(200).json({msg : err.message});
+        try {
+            var today_visitor, today_visitor_count, week_visitor, week_visitor_count, month_visitor, month_visitor_count, member_count, affiliated_count, guest_count, others_count;
+            today_visitor = await todayVisitorProvider();
+            week_visitor = await weekVisitorProvider();
+            month_visitor = await monthVisitorProvider();
+            member_count = await memberCountProvider();
+            affiliated_count = await affiliatedCountProvider();
+            guest_count = await guestCountProvider();
+            others_count = await othersCountProvider();
+            today_visitor_count = today_visitor.length;
+            week_visitor_count = week_visitor.length;
+            month_visitor_count = month_visitor.length;
+            // return res.send(week_visitor);
+            return res.render('admin/dashboard', { today_visitor_count, week_visitor_count, month_visitor_count, member_count,affiliated_count,guest_count,others_count });
+        } catch (err) {
+            return res.send(200).json({ msg: err.message });
         }
     },
     test2: async (req, res) => { // sms send test

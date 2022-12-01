@@ -34,9 +34,9 @@
                     </div>
                     <!-- ./col -->
                     <div class="col-xs-6 col-md-3 text-center">
-                        <input type="text" class="knob" value="50" data-skin="tron" data-thickness="0.2" data-angleArc="250" data-angleOffset="-125" data-width="120" data-height="120" data-fgColor="#00c0ef" data-readonly="true" style="outline: none;">
+                        <input type="text" class="knob" value="<%= guest_count %>" data-skin="tron" data-thickness="0.2" data-angleArc="250" data-angleOffset="-125" data-width="120" data-height="120" data-fgColor="#00c0ef" data-readonly="true" style="outline: none;">
 
-                        <div class="knob-label"><h4><b>Referal visitor</b></h4></div>
+                        <div class="knob-label"><h4><b>Guest visitor</b></h4></div>
                     </div>
                     <!-- ./col -->
                 </div>
@@ -105,16 +105,19 @@
         var donut = new Morris.Donut({
             element: 'sales-chart',
             resize: true,
-            colors: ["#3c8dbc", "#f56954", "#00a65a"],
+            colors: ["#3c8dbc", "#f56954", "#00a65a","#A020F0"],
             data: [{
                 label: "Member",
-                value: 12
+                value: '<%= member_count %>'
             }, {
                 label: "Affiliated Member",
-                value: 30
+                value: '<%= affiliated_count %>'
             }, {
                 label: "Guest",
-                value: 20
+                value: '<%= guest_count %>'
+            },{
+                label: "Others",
+                value: '<%= others_count %>'
             }],
             hideHover: 'auto'
         });
@@ -137,7 +140,7 @@
         var areaChart = new Chart(areaChartCanvas)
 
         var areaChartData = {
-            labels: ['Jan', 'Feb', 'March', 'April', 'May', 'June'],
+            labels: ['Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
             datasets: [{
                 label: 'Expense',
                 fillColor: 'rgba(60,141,188,0.9)',

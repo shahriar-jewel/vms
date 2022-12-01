@@ -148,11 +148,27 @@ const monthMemberProvider = async (req, res) => {
         return res.status(500).json({ msg: err.message });
     }
 }
+const memberCountProvider = async (req,res) => {
+    return await VisitorInfo.find({"visitor_info.visitor.visitor_type" : 'Member'}).count();
+}
+const affiliatedCountProvider = async (req,res) => {
+    return await VisitorInfo.find({"visitor_info.visitor.visitor_type" : 'Affiliated'}).count();
+}
+const guestCountProvider = async (req,res) => {
+    return await VisitorInfo.find({"visitor_info.visitor.visitor_type" : 'Guest'}).count();
+}
+const othersCountProvider = async (req,res) => {
+    return await VisitorInfo.find({"visitor_info.visitor.visitor_type" : 'Others'}).count();
+}
 module.exports = {
     todayVisitorProvider,
     weekVisitorProvider,
     monthVisitorProvider,
     todayMemberProvider,
     weekMemberProvider,
-    monthMemberProvider
+    monthMemberProvider,
+    memberCountProvider,
+    affiliatedCountProvider,
+    guestCountProvider,
+    othersCountProvider
 };

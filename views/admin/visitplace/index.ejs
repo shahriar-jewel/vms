@@ -18,7 +18,7 @@
         <div class="box-header">
             <h3 class="box-title" style="color: grey;"><i style="color: #3c8dbc"
                     class="glyphicon glyphicon-lock"></i>&nbsp;&nbsp;Visit Place Management</h3>
-            <a data-toggle="modal" data-target="#visitplace_modal" data-backdrop="static" data-keyboard="false"
+            <a id="addBtn" data-toggle="modal" data-target="#visitplace_modal" data-backdrop="static" data-keyboard="false"
                 href="#"><button class="pull-right" type="button"><i style="color:#3c8dbc"
                         class="glyphicon glyphicon-plus-sign"></i></button></a>
         </div>
@@ -91,7 +91,7 @@
             var method;
             var id = $('#hidden_place_id').val();
             if (id) {
-                url = '/admin/visit-place/' + id;
+                url = '/admin/visit-place/update';
                 method = 'PUT';
             } else {
                 url = '/admin/visit-place/';
@@ -100,7 +100,7 @@
 
             $.ajax({
             url: url,
-            method: 'POST',
+            method: method,
             data: data,
             dataType : 'json',
             success: function (response) {
@@ -139,4 +139,34 @@
             }
         });
         });
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $('#visitplace_datatable').on('click', '#editPlace', function () {
+                let placeId = $(this).attr('data-place_id');
+                $('#hidden_place_id').val(placeId);
+                $.ajax({
+                    url: '/admin/visit-place/edit/' + placeId,
+                    method: 'GET',
+                    dataType: "json",
+                    success: function (response) {
+                        console.log(response)
+                        if (response.status === 'success') {
+                            $('#place').val(response.data.place);
+                            response.data.status == 1 ? $('#status').prop('checked', true) : $('#status').prop('checked', false);
+                        }
+                    },
+                    error: function (error) {
+                        console.log(error);
+                    }
+                })
+            })
+        })
+    </script>
+    <script>
+        $(document).ready(function(){
+            $('#addBtn').on('click',function(){
+                $('#place').val('');
+            })
+        })
     </script>

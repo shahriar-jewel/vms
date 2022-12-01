@@ -29,7 +29,8 @@
     }
 
     input[type="checkbox"] {
-        accent-color: #0689bd;;
+        accent-color: #0689bd;
+        ;
         height: 20px;
         width: 20px;
         margin-top: -3px;
@@ -62,38 +63,45 @@
                                             <div class="row">
                                                 <div class="col-md-12">
 
-                                                    <input type="hidden" class="form-control input-sm" name="sys_group_id" id="sys_group_id">
+                                                    <input type="hidden" class="form-control input-sm"
+                                                        name="sys_group_id" id="sys_group_id">
 
-                                                    <% groupBy['View'].forEach((v,index) => { %>
+                                                    <% groupBy['View'].forEach((v,index)=> { %>
                                                         <div class="col-md-3">
                                                             <div class="checkbox">
                                                                 <label>
-                                                                    <input name="view[]" value="<%= v['route']+' '+v['method']+' '+v['id'] %>" id="<%= v['id'] %>" type="checkbox">&nbsp;&nbsp; <%= v['name'] %>
+                                                                    <input name="view[]"
+                                                                        value="<%= v['route']+' '+v['method']+' '+v['id'] %>"
+                                                                        id="<%= v['id'] %>" type="checkbox">&nbsp;&nbsp;
+                                                                    <%= v['name'] %>
                                                                 </label>
                                                             </div>
                                                         </div>
-                                                    <% }); %>
-                                                   
+                                                        <% }); %>
+
                                                 </div>
                                             </div>
                                         </div>
 
                                         <div class="tab-pane" id="create">
 
-                                            <% groupBy['Create'].forEach((c,index) => { %>
+                                            <% groupBy['Create'].forEach((c,index)=> { %>
                                                 <div class="col-md-3">
                                                     <div class="checkbox">
                                                         <label>
-                                                            <input name="create[]" value="<%= c['route']+' '+c['method']+' '+c['id'] %>" id="<%=c['id']%>" type="checkbox">&nbsp;&nbsp; <%= c['name'] %>
+                                                            <input name="create[]"
+                                                                value="<%= c['route']+' '+c['method']+' '+c['id'] %>"
+                                                                id="<%=c['id']%>" type="checkbox">&nbsp;&nbsp; <%=
+                                                                c['name'] %>
                                                         </label>
                                                     </div>
                                                 </div>
-                                            <% }); %>
+                                                <% }); %>
 
                                         </div>
 
                                         <div class="tab-pane" id="update">
-                                            <h1>update</h1>
+                                            <h1>Update</h1>
                                         </div>
 
                                         <div class="tab-pane" id="delete">

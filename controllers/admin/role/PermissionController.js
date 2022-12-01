@@ -84,7 +84,7 @@ const PermissionController = {
                         status = "<span class='label label-danger'>Inactive</span>";
                     }
 
-                    var action = "<a class='btn-primary btn btn-rounded' id='edit' data-id='" + permission['_id'] + "' style='padding:0px 4px;' href='#'><i class='glyphicon glyphicon-arrow-up'></i></a>";
+                    var action = "";
                     nestedData = {
                         _id: permission['_id'],
                         name: permission['name'],

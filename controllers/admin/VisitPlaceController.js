@@ -38,6 +38,29 @@ const VisitPlaceController = {
             return res.status(500).json({ msg: err.message });
         }
     },
+    edit: async (req, res) => {
+        const place = await Visitplace.findById(req.params.id);
+        if (!place) return respondWithError(req, res, 'Place not found.!', errors = [], 422);
+        return respondWithSuccess(req, res, 'Visit place data!', data = place, 200);
+    },
+    update: async (req, res) => {
+        const { place, status, hidden_place_id } = req.body;
+        let errors = validationResult(req);
+        if (!errors.isEmpty()) {
+            errors = errors.array();
+            msg = 'Validation Error';
+            return respondWithError(req, res, msg, errors, 422);
+        } else {
+            const isUpdate = await Visitplace.updateOne(
+                { _id: hidden_place_id },
+                {
+                    $set: { place, status: status? status : 0 }
+                }
+            )
+            if (!isUpdate.ok) return respondWithError(req, res, 'Do not update the record. Something went wrong!', errors, 422);
+            return respondWithSuccess(req, res, 'Visit place updated successfully!', data = '', 200);
+        }
+    },
     visitPlaceDatatableAjax: async (req, res) => {
         try {
             var searchStr = req.query.search['value'];
@@ -60,20 +83,20 @@ const VisitPlaceController = {
             var nestedData = {};
             if (places) {
                 var sl = 0;
-                places.map((visit, i) => {
+                places.map((place, i) => {
                     var status;
-                    if (visit['status'] === 1) {
+                    if (place['status'] === 1) {
                         status = "<span class='label label-success'>Active</span>";
-                    } else if (visit['status'] === 0) {
+                    } else if (place['status'] === 0) {
                         status = "<span class='label label-danger'>Inactive</span>";
                     }
 
-                    var action = "<a class='btn-primary btn btn-rounded' id='edit' data-id='" + visit['_id'] + "' style='padding:0px 4px;' href='#'><i class='glyphicon glyphicon-lock'></i></a>";
+                    var action = "<a data-toggle='modal' data-target='#visitplace_modal' id='editPlace' data-backdrop='static' data-keyboard='false' class='btn-primary btn btn-rounded' data-place_id='" + place['_id'] + "' style='padding:0px 4px;' href='#'><i class='glyphicon glyphicon-edit'></i></a>";
                     nestedData = {
-                        _id: visit['_id'],
-                        place: visit['place'],
+                        _id: place['_id'],
+                        place: place['place'],
                         status,
-                        createdAt: new Date(visit['createdAt']).toLocaleTimeString(),
+                        createdAt: new Date(place['createdAt']).toLocaleTimeString(),
                         actions: action
                     };
 

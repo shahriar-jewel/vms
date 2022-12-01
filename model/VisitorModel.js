@@ -18,6 +18,7 @@ const visitorPayloadSchema = new mongoose.Schema({
             date: { type: Date, default: new Date()},
             time_in: { type: Date, default: new Date()},
             time_out: { type: Date, default: new Date()},
+            duration: { type: String, default: 0},
             meeting_status: { type: Number, default: 'checkedin'},
             remarks: { type: String, default: null},
             platform: { type: String, default: null},
