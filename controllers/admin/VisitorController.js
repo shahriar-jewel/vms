@@ -87,7 +87,7 @@ const VisitorController = {
         var recordsFiltered;
         if (searchStr) {
             var regex = new RegExp(searchStr, "i");
-            searchStr = { $or: [{ 'visitor_info.visitor.name': regex }, { 'visitor_info.visitor.member_staff_id': regex }, { 'visitor_info.visitor.visitor_type': regex }, { 'visitor_info.visitor.date': regex }, { 'visitor_info.visitor.time_in': regex }, { 'visitor_info.visitor.time_out': regex }, { 'visitor_info.visitor.meeting_status': regex }, { 'visitor_info.visitor.visit_place': regex }, { 'visitor_info.visitor.remarks': regex }] };
+            searchStr = { $or: [{ 'visitor_info.visitor.name': regex }, { 'visitor_info.visitor.member_staff_id': regex }, { 'visitor_info.visitor.visitor_type': regex }, { 'visitor_info.visitor.time_in': regex }, { 'visitor_info.visitor.time_out': regex }, { 'visitor_info.visitor.meeting_status': regex }, { 'visitor_info.visitor.visit_place': regex }, { 'visitor_info.visitor.remarks': regex }] };
             var visits = await VisitorInfo.find(searchStr).sort({ 'createdAt': -1 });
             recordsFiltered = await VisitorInfo.count(searchStr);
         } else {
@@ -125,7 +125,6 @@ const VisitorController = {
                     name: visit['visitor_info']['visitor']['name'] ? visit['visitor_info']['visitor']['name'] : '-',
                     image: image,
                     meeting_status,
-                    date: visit['visitor_info']['visitor']['date'],
                     time_in: timein_date+' '+timein_time,
                     time_out: timeout_date+' '+timeout_time,
                     duration: visit['visitor_info']['visitor']['duration'],
