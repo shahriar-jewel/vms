@@ -57,7 +57,7 @@
 					<section class="content">
 						<div class="row">
 							<div class="col-md-12">
-								<div class="col-md-6">
+								<div class="col-md-7">
 									<div class="box-body" style="padding: 4px;">
 										<div class="form-group">
 											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Visitor
@@ -68,6 +68,13 @@
 													type="radio">
 												<label for="inputPassword3"
 													class="col-sm-1 control-label pt-10">Member</label>
+											</div>
+											<div class="inline-flex">
+												<input class="visitor_type"
+													style="width: 20px;height: 20px;" name="visitor_type" value="Family"
+													type="radio">
+												<label for="inputPassword3"
+													class="col-sm-1 control-label pt-10">Family</label>
 											</div>
 											<div class="inline-flex">
 												<input class="visitor_type" style="width: 20px;height: 20px;"
@@ -201,6 +208,27 @@
 											</div>
 										</div>
 
+										<div class="form-group" id="relationWithMember">
+											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Relation With Member</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="relationWithMember" placeholder="Enter relation with member">
+											</div>
+										</div>
+
+										<div class="form-group" id="relativeName">
+											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Relative name</label>
+											<div class="col-sm-9">
+												<input type="text" class="form-control" name="relativeName" placeholder="Enter relative name">
+											</div>
+										</div>
+
+										<div class="form-group" id="relativePhone">
+											<label for="inputPassword3" class="col-sm-3 control-label pt-10">Relative Mobile</label>
+											<div class="col-sm-9">
+												<input type="number" class="form-control" name="relativePhone" placeholder="Enter relative mobile number">
+											</div>
+										</div>
+
 										<div class="form-group remarks">
 											<label for="inputPassword3"
 												class="col-sm-3 control-label pt-10">Remarks</label>
@@ -235,7 +263,7 @@
 									</div>
 								</div>
 
-								<div class="col-md-6 no-padding" id="guest_entry">
+								<div class="col-md-5 no-padding" id="guest_entry">
 									<div class="box-header">
 										<h3 class="box-title" style="color: grey;"><i style="color: #3c8dbc"
 												class="fa fa-users text-sm"></i>&nbsp;&nbsp;Guest Information</h3>

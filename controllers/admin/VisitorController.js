@@ -43,9 +43,12 @@ const VisitorController = {
                     visitor_info: {
                         visitor: {
                             _id: fields.visitor_type[0] == 'Affiliated' || fields.visitor_type[0] == 'Others' ? null : fields._id[0].split(' ')[1],
-                            name: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Guest' ? fields._id[0].split(' ')[4] : (fields.visitor_type[0] == 'Affiliated' ? fields.name[0] : (fields.visitor_type[0] == 'Others' ? fields.other_name[0] : '-')),
+                            name: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Family' || fields.visitor_type[0] == 'Guest' ? fields._id[0].split(' ')[4] : (fields.visitor_type[0] == 'Affiliated' ? fields.name[0] : (fields.visitor_type[0] == 'Others' ? fields.other_name[0] : '-')),
                             member_staff_id: fields.visitor_type[0] != 'Others' ? fields.member_staff_id[0] : null,
                             mobile: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Guest' ? fields._id[0].split(' ')[3] : fields.mobile[0],
+                            relationWithMember: fields.visitor_type[0] == 'Family' ? fields.relationWithMember[0] : '',
+                            relativeName: fields.visitor_type[0] == 'Family' ? fields.relativeName[0] : '',
+                            relativePhone: fields.visitor_type[0] == 'Family' ? fields.relativePhone[0] : '',
                             club: fields.visitor_type[0] == 'Affiliated' ? fields.club[0] : null,
                             image: file_name,
                             // type : fields.is_staff ? fields.is_staff[0] : 'member', // type whom the guest to visit. e.g member or staff

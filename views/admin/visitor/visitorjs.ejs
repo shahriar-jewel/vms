@@ -142,6 +142,9 @@
         $("#mobile").animate({ "opacity": "hide" }, 500);
         $("#other_address").animate({ "opacity": "hide" }, 500);
         $("#other_purpose").animate({ "opacity": "hide" }, 500);
+        $("#relationWithMember").animate({ "opacity": "hide" }, 500);
+        $("#relativeName").animate({ "opacity": "hide" }, 500);
+        $("#relativePhone").animate({ "opacity": "hide" }, 500);
         // fields end for Others 
 
         $('.visitor_type').on('click', function () {
@@ -158,6 +161,9 @@
                 $("#mobile").animate({ "opacity": "show" }, 500);
                 $("#other_address").animate({ "opacity": "hide" }, 500);
                 $("#other_purpose").animate({ "opacity": "hide" }, 500);
+                $("#relationWithMember").animate({ "opacity": "hide" }, 500);
+                $("#relativeName").animate({ "opacity": "hide" }, 500);
+                $("#relativePhone").animate({ "opacity": "hide" }, 500);
             } else if ($(this).val() == 'Guest') {
                 $("#member_staff_id_input").animate({ "opacity": "show" }, 500);
                 $("#guest_entry").animate({ "opacity": "show" }, 500);
@@ -173,6 +179,9 @@
                 $("#mobile").animate({ "opacity": "hide" }, 500);
                 $("#other_address").animate({ "opacity": "hide" }, 500);
                 $("#other_purpose").animate({ "opacity": "hide" }, 500);
+                $("#relationWithMember").animate({ "opacity": "hide" }, 500);
+                $("#relativeName").animate({ "opacity": "hide" }, 500);
+                $("#relativePhone").animate({ "opacity": "hide" }, 500);
             } else if ($(this).val() == 'Member') {
                 $("#member_staff_id_input").animate({ "opacity": "show" }, 500);
                 $("#guest_entry").animate({ "opacity": "hide" }, 500);
@@ -188,6 +197,27 @@
                 $("#mobile").animate({ "opacity": "hide" }, 500);
                 $("#other_address").animate({ "opacity": "hide" }, 500);
                 $("#other_purpose").animate({ "opacity": "hide" }, 500);
+                $("#relationWithMember").animate({ "opacity": "hide" }, 500);
+                $("#relativeName").animate({ "opacity": "hide" }, 500);
+                $("#relativePhone").animate({ "opacity": "hide" }, 500);
+            } else if ($(this).val() == 'Family') {
+                $("#member_staff_id_input").animate({ "opacity": "show" }, 500);
+                $("#guest_entry").animate({ "opacity": "hide" }, 500);
+                $("#member_staff_id").attr('readonly', true);
+                $("#relatives").animate({ "opacity": "show" }, 500);
+                $("#aff_member_name").animate({ "opacity": "hide" }, 500);
+                $(".visit_place").animate({ "opacity": "hide" }, 500);
+                $("#is_staff_checkbox").animate({ "opacity": "hide" }, 500);
+                // $("#selectbox").attr('class', 'col-sm-9');
+                $("#club").animate({ "opacity": "hide" }, 500);
+                $("#member_staff_dropdown").animate({ "opacity": "show" }, 500);
+                $("#other_name").animate({ "opacity": "hide" }, 500);
+                $("#mobile").animate({ "opacity": "hide" }, 500);
+                $("#other_address").animate({ "opacity": "hide" }, 500);
+                $("#other_purpose").animate({ "opacity": "hide" }, 500);
+                $("#relationWithMember").animate({ "opacity": "show" }, 500);
+                $("#relativeName").animate({ "opacity": "show" }, 500);
+                $("#relativePhone").animate({ "opacity": "show" }, 500);
             } else if ($(this).val() == 'Others') {
                 $("#member_staff_dropdown").animate({ "opacity": "hide" }, 500);
                 $("#member_staff_id_input").animate({ "opacity": "hide" }, 500);
@@ -201,6 +231,9 @@
                 $("#other_purpose").animate({ "opacity": "show" }, 500);
                 $("#aff_member_name").animate({ "opacity": "hide" }, 500);
                 $("#club").animate({ "opacity": "hide" }, 500);
+                $("#relationWithMember").animate({ "opacity": "hide" }, 500);
+                $("#relativeName").animate({ "opacity": "hide" }, 500);
+                $("#relativePhone").animate({ "opacity": "hide" }, 500);
             }
         });
 

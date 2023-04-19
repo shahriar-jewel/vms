@@ -34,6 +34,9 @@ const VisitorController = {
                         name: fields.name[0],
                         member_staff_id: fields.member_id[0],
                         mobile: fields.mobile[0],
+                        relationWithMember: fields.relationWithMember[0],
+                        relativeName: fields.relativeName[0],
+                        relativePhone: fields.relativePhone[0],
                         club: fields.club ? fields.club[0] : null,
                         image: file_name,
                         // type : fields.is_staff ? fields.is_staff[0] : 'member', // type whom the guest to visit. e.g member or staff
