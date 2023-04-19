@@ -4,6 +4,7 @@ const MenuController = require('../controllers/admin/role/MenuController');
 const UserGroupController = require('../controllers/admin/role/UserGroupController');
 const PermissionController = require('../controllers/admin/role/PermissionController');
 const VisitPlaceController = require('../controllers/admin/VisitPlaceController');
+const ClubController = require('../controllers/admin/ClubController');
 const VisitorController = require('../controllers/admin/VisitorController');
 const ReportController = require('../controllers/admin/ReportController');
 const MemberStaffController = require('../controllers/admin/MemberStaffController');
@@ -110,6 +111,16 @@ router.put('/visit-place/update', [
     Auth,
     check('place').not().isEmpty().withMessage('Visit place is required !'),
     VisitPlaceController.update]);
+// affiliated club name
+router
+    .route('/club')
+    .get([Auth, CheckPermission('/admin/club'), ClubController.index])
+    .post([
+        Auth, CheckPermission('/admin/club'),
+        check('name').not().isEmpty().withMessage('Club name is required !'),
+        ClubController.store
+    ]); 
+router.get('/club/datatable-ajax', [Auth, CheckPermission('/admin/club/datatable-ajax'), ClubController.clubDatatableAjax]);
 router.get('/visit-place/datatable-ajax', [Auth, CheckPermission('/admin/visit-place/datatable-ajax'), VisitPlaceController.visitPlaceDatatableAjax]);
 // reports route
 router.get('/report/module', [Auth, CheckPermission('/admin/report/module'), ReportController.index]);
