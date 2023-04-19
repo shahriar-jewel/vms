@@ -139,7 +139,7 @@
         $("#member_staff_dropdown").animate({ "opacity": "show" }, 500);
         // fields start for Others
         $("#other_name").animate({ "opacity": "hide" }, 500);
-        $("#other_mobile").animate({ "opacity": "hide" }, 500);
+        $("#mobile").animate({ "opacity": "hide" }, 500);
         $("#other_address").animate({ "opacity": "hide" }, 500);
         $("#other_purpose").animate({ "opacity": "hide" }, 500);
         // fields end for Others 
@@ -155,7 +155,7 @@
                 $(".visit_place").animate({ "opacity": "show" }, 500);
                 $("#club").animate({ "opacity": "show" }, 500);
                 $("#other_name").animate({ "opacity": "hide" }, 500);
-                $("#other_mobile").animate({ "opacity": "hide" }, 500);
+                $("#mobile").animate({ "opacity": "show" }, 500);
                 $("#other_address").animate({ "opacity": "hide" }, 500);
                 $("#other_purpose").animate({ "opacity": "hide" }, 500);
             } else if ($(this).val() == 'Guest') {
@@ -170,7 +170,7 @@
                 $("#club").animate({ "opacity": "hide" }, 500);
                 $("#member_staff_dropdown").animate({ "opacity": "show" }, 500);
                 $("#other_name").animate({ "opacity": "hide" }, 500);
-                $("#other_mobile").animate({ "opacity": "hide" }, 500);
+                $("#mobile").animate({ "opacity": "hide" }, 500);
                 $("#other_address").animate({ "opacity": "hide" }, 500);
                 $("#other_purpose").animate({ "opacity": "hide" }, 500);
             } else if ($(this).val() == 'Member') {
@@ -185,7 +185,7 @@
                 $("#club").animate({ "opacity": "hide" }, 500);
                 $("#member_staff_dropdown").animate({ "opacity": "show" }, 500);
                 $("#other_name").animate({ "opacity": "hide" }, 500);
-                $("#other_mobile").animate({ "opacity": "hide" }, 500);
+                $("#mobile").animate({ "opacity": "hide" }, 500);
                 $("#other_address").animate({ "opacity": "hide" }, 500);
                 $("#other_purpose").animate({ "opacity": "hide" }, 500);
             } else if ($(this).val() == 'Others') {
@@ -196,7 +196,7 @@
                 $(".remarks").animate({ "opacity": "hide" }, 500);
                 $(".visit_place").animate({ "opacity": "hide" }, 500);
                 $("#other_name").animate({ "opacity": "show" }, 500);
-                $("#other_mobile").animate({ "opacity": "show" }, 500);
+                $("#mobile").animate({ "opacity": "show" }, 500);
                 $("#other_address").animate({ "opacity": "show" }, 500);
                 $("#other_purpose").animate({ "opacity": "show" }, 500);
                 $("#aff_member_name").animate({ "opacity": "hide" }, 500);
@@ -401,23 +401,23 @@
 <script type="text/javascript">
     $(document).ready(function () {
         $('#other_mbl').on('keyup', function () {
-            var url = '/admin/other/is-available';
+            var url = '/admin/search-with-mobile';
             var method = 'POST';
 
-            var other_mobile = $(this).val(); // 'Others' visitor_type visitor mobile no
+            var mobile = $(this).val();
 
-            if (other_mobile === '') {
+            if (mobile === '') {
                 $('#other_mbl').val('');
                 $('#other_nm').val('');
                 $('#other_adrs').val('');
                 $('#other_prps').val('');
             }
 
-            if (other_mobile != '' && (other_mobile.substr(0, 6).length === 6)) {
+            if (mobile != '' && (mobile.substr(0, 6).length === 6)) {
                 $.ajax({
                     url: url,
                     method: method,
-                    data: { other_mobile },
+                    data: { mobile },
                     dataType: 'json',
                     success: function (response) {
                         console.log(response);

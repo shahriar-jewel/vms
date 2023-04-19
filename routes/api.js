@@ -17,5 +17,6 @@ router.get('/loggedin-user', apiauth, LoginController.getLoggedinUser);
 
 router.post('/visitor-payload', apiauth, VisitorController.getVisitorPayload);
 router.post('/other/is-available', apiauth, VisitorController.getOtherData);
+router.post('/search-with-mobile', apiauth, VisitorController.searchWithMobile);
 
 module.exports = router;

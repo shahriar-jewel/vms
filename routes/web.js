@@ -150,6 +150,6 @@ router
         MemberStaffController.bulkUpload
     ]);
 router.get('/member-staff/datatable-ajax', [Auth, CheckPermission('/admin/member-staff/datatable-ajax'), MemberStaffController.memberStaffDatatableAjax]);
-router.post('/other/is-available', [Auth, CheckPermission('/admin/other/is-available'), VisitorController.getOtherData]);
+router.post('/search-with-mobile', [Auth, CheckPermission('/admin/search-with-mobile'), VisitorController.searchWithMobile]);
 
 module.exports = router;

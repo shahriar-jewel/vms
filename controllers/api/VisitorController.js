@@ -77,6 +77,19 @@ const VisitorController = {
             return res.status(200).json({ msg: err.message });
         }
     },
+    searchWithMobile: async (req, res) => {
+        var mobile = req.body.mobile;
+        var data = await VisitorInfo.find({ "$and": [{ "visitor_info.visitor.mobile": { "$regex": mobile, "$options": "i" } }] }).limit(1);
+        try {
+            if (data.length > 0) {
+                return respondWithSuccess(req, res, msg = 'Visitor data !', data, 200);
+            } else {
+                return respondWithError(req, res, msg = 'no data found !', data, 200);
+            }
+        } catch (err) {
+            return res.status(200).json({ msg: err.message });
+        }
+    },
 }
 
 module.exports = VisitorController;

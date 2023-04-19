@@ -45,7 +45,7 @@ const VisitorController = {
                             _id: fields.visitor_type[0] == 'Affiliated' || fields.visitor_type[0] == 'Others' ? null : fields._id[0].split(' ')[1],
                             name: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Guest' ? fields._id[0].split(' ')[4] : (fields.visitor_type[0] == 'Affiliated' ? fields.name[0] : (fields.visitor_type[0] == 'Others' ? fields.other_name[0] : '-')),
                             member_staff_id: fields.visitor_type[0] != 'Others' ? fields.member_staff_id[0] : null,
-                            mobile: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Guest' ? fields.visitor_type[0].split(' ')[3] : (fields.visitor_type[0] == 'Affiliated' ? '' : fields.other_mobile[0]),
+                            mobile: fields.visitor_type[0] == 'Member' || fields.visitor_type[0] == 'Guest' ? fields._id[0].split(' ')[3] : fields.mobile[0],
                             club: fields.visitor_type[0] == 'Affiliated' ? fields.club[0] : null,
                             image: file_name,
                             // type : fields.is_staff ? fields.is_staff[0] : 'member', // type whom the guest to visit. e.g member or staff
@@ -229,9 +229,9 @@ const VisitorController = {
             return respondWithError(req, res, msg = 'No guests !', data = [], 200);
         }
     },
-    getOtherData : async (req,res) => { // data of 'Others' visitor_type visitor
-        var mobile = req.body.other_mobile;
-        var data = await VisitorInfo.find({"$and" : [{"visitor_info.visitor.mobile" : {"$regex" : mobile,"$options" : "i"}},{"visitor_info.visitor.visitor_type" : 'Others'}]}).select("visitor_info.visitor.name visitor_info.visitor.mobile visitor_info.visitor.address visitor_info.visitor.purpose").limit(1);
+    searchWithMobile : async (req,res) => {
+        var mobile = req.body.mobile;
+        var data = await VisitorInfo.find({"$and" : [{"visitor_info.visitor.mobile" : {"$regex" : mobile,"$options" : "i"}}]}).limit(1);
         try{
             if(data.length > 0){
                 return respondWithSuccess(req, res, msg = 'visitor data !', data, 200);
